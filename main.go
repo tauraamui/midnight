@@ -36,8 +36,6 @@ func run() {
 	tilesToRenderX := WIN_WIDTH / TILE_SIZE
 	tilesToRenderY := WIN_HEIGHT / TILE_SIZE
 
-	println("Tiles column:", tilesToRenderX, "Tiles row:", tilesToRenderY)
-
 	for !win.Closed() {
 		win.Clear(colornames.Black)
 
