@@ -1,44 +1,69 @@
 package main
 
 import (
+	"image"
+	"os"
+	"time"
+
+	_ "image/png"
+
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
-	"time"
 )
 
 const (
 	WIN_WIDTH  = 800
 	WIN_HEIGHT = 600
-	TILE_SIZE  = 100
+	SCALE      = 6
 )
 
 func run() {
 	win := makeGLWindow()
 	fps := time.Tick(time.Second / 60)
-	imd := imdraw.New(nil)
 
-	tilesToRenderX := WIN_WIDTH / TILE_SIZE
-	tilesToRenderY := WIN_HEIGHT / TILE_SIZE
+	spritesheet, err := loadSpritesheet("assets/terrain.png")
+	if err != nil {
+		panic(err)
+	}
 
+	var terrainTiles []pixel.Rect
+	for x := spritesheet.Bounds().Min.X; x < spritesheet.Bounds().Max.X; x += 32 {
+		for y := spritesheet.Bounds().Min.Y; y < spritesheet.Bounds().Max.Y; y += 32 {
+			terrainTiles = append(terrainTiles, pixel.R(x, y, x+32, y+32))
+		}
+	}
+
+	grass := pixel.NewSprite(spritesheet, terrainTiles[10])
 	for !win.Closed() {
-		win.Clear(colornames.Black)
+		win.Clear(colornames.Whitesmoke)
 
-		for i := 0; i < tilesToRenderX; i++ {
-			for j := 0; j < tilesToRenderY; j++ {
-				tileX := i * TILE_SIZE
-				tileY := j * TILE_SIZE
-				imd.Push(pixel.V(float64(tileX), float64(tileY)), pixel.V(float64(tileX+TILE_SIZE), float64(tileY+TILE_SIZE)))
-				imd.Color = colornames.Cyan
-				imd.Rectangle(10)
+		tilesToRenderX := int(win.Bounds().W()) / (32 * SCALE)
+		tilesToRenderY := int(win.Bounds().H()) / (32 * SCALE)
+
+		for x := 0; x < tilesToRenderX+5; x++ {
+			for y := 0; y < tilesToRenderY+5; y++ {
+				grass.Draw(win, pixel.IM.Scaled(pixel.ZV, SCALE).Moved(pixel.V(float64(x*(32*SCALE)), float64(y*(32*SCALE)))))
 			}
 		}
-		imd.Draw(win)
 
 		win.Update()
+
 		<-fps
 	}
+}
+
+func loadSpritesheet(path string) (pixel.Picture, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+	return pixel.PictureDataFromImage(img), nil
 }
 
 func makeGLWindow() *pixelgl.Window {
