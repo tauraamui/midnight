@@ -14,23 +14,9 @@ const (
 	TILE_SIZE  = 100
 )
 
-type Tile struct {
-	width  int
-	height int
-}
-
 func run() {
+	win := makeGLWindow()
 	fps := time.Tick(time.Second / 60)
-	win, err := pixelgl.NewWindow(
-		pixelgl.WindowConfig{
-			Title:  "Midnight",
-			Bounds: pixel.R(0, 0, float64(WIN_WIDTH), float64(WIN_HEIGHT)),
-		},
-	)
-	if err != nil {
-		panic(err)
-	}
-
 	imd := imdraw.New(nil)
 
 	tilesToRenderX := WIN_WIDTH / TILE_SIZE
@@ -44,10 +30,8 @@ func run() {
 				tileX := i * TILE_SIZE
 				tileY := j * TILE_SIZE
 				imd.Push(pixel.V(float64(tileX), float64(tileY)), pixel.V(float64(tileX+TILE_SIZE), float64(tileY+TILE_SIZE)))
-				imd.EndShape = imdraw.SharpEndShape
 				imd.Color = colornames.Cyan
-				// imd.Push(pixel.V(float64(i), float64(j)), pixel.V(float64(i+TILE_SIZE), float64(j+TILE_SIZE)))
-				imd.Rectangle(1)
+				imd.Rectangle(10)
 			}
 		}
 		imd.Draw(win)
@@ -55,6 +39,19 @@ func run() {
 		win.Update()
 		<-fps
 	}
+}
+
+func makeGLWindow() *pixelgl.Window {
+	win, err := pixelgl.NewWindow(
+		pixelgl.WindowConfig{
+			Title:  "Midnight",
+			Bounds: pixel.R(0, 0, float64(WIN_WIDTH), float64(WIN_HEIGHT)),
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+	return win
 }
 
 func main() {
