@@ -10,6 +10,7 @@ import (
 const (
 	TILE_SIZE         = 32
 	SCALE             = 2
+	CAM_SPEED         = 400.0
 	GRASS_TILES_START = 9
 	GRASS_TILES_END   = 11
 )
@@ -37,7 +38,23 @@ type World struct {
 	camPos      pixel.Vec
 }
 
-func (w *World) Draw(win *pixelgl.Window) {
+func (w *World) Draw(win *pixelgl.Window, dt float64) {
+	if win.Pressed(pixelgl.KeyA) {
+		w.camPos.X -= CAM_SPEED * dt
+	}
+
+	if win.Pressed(pixelgl.KeyD) {
+		w.camPos.X += CAM_SPEED * dt
+	}
+
+	if win.Pressed(pixelgl.KeyW) {
+		w.camPos.Y += CAM_SPEED * dt
+	}
+
+	if win.Pressed(pixelgl.KeyS) {
+		w.camPos.Y -= CAM_SPEED * dt
+	}
+
 	cam := pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(cam)
 	maxX, maxY := computeTilesToRender(win.Bounds())

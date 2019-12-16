@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
+	"image/color"
 	_ "image/png"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/tauraamui/midnight/game"
-	"golang.org/x/image/colornames"
 )
 
 const (
@@ -24,9 +24,12 @@ func run() {
 
 	world := game.NewWorld(loadTerrainSprites())
 
+	last := time.Now()
 	for !win.Closed() {
-		win.Clear(colornames.Whitesmoke)
-		world.Draw(win)
+		deltaTime := time.Since(last).Seconds()
+		last = time.Now()
+		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 1})
+		world.Draw(win, deltaTime)
 		win.Update()
 		<-fps
 	}
