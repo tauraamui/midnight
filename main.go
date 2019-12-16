@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"os"
+	"strconv"
 	"time"
 
 	"image/color"
@@ -25,12 +26,24 @@ func run() {
 	world := game.NewWorld(loadTerrainSprites())
 
 	last := time.Now()
+	lastFPSCheck := time.Now()
+	frameCount := 0
+	currentFPS := 0
 	for !win.Closed() {
+		frameCount++
+		if time.Since(lastFPSCheck).Seconds() >= 1 {
+			currentFPS = frameCount
+			frameCount = 0
+			lastFPSCheck = time.Now()
+		}
+		world.FPSText.Clear()
+		world.FPSText.WriteString(strconv.Itoa(currentFPS))
 		deltaTime := time.Since(last).Seconds()
 		last = time.Now()
 
-		world.Update(win.Pressed, deltaTime)
 		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
+
+		world.Update(win.Pressed, deltaTime)
 		world.Draw(win)
 
 		win.Update()
