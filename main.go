@@ -19,6 +19,8 @@ const (
 	WIN_HEIGHT = 600
 )
 
+var fullscreen = false
+
 func run() {
 	win := makeGLWindow()
 	fps := time.Tick(time.Second / 60)
@@ -30,6 +32,10 @@ func run() {
 	frameCount := 0
 	currentFPS := 0
 	for !win.Closed() {
+		if win.JustReleased(pixelgl.KeyF) {
+			fullscreen = !fullscreen
+			toggleFullscreen(win)
+		}
 		frameCount++
 		if time.Since(lastFPSCheck).Seconds() >= 1 {
 			currentFPS = frameCount
@@ -81,6 +87,14 @@ func loadSpritesheet(path string) (pixel.Picture, error) {
 		return nil, err
 	}
 	return pixel.PictureDataFromImage(img), nil
+}
+
+func toggleFullscreen(win *pixelgl.Window) {
+	var mon *pixelgl.Monitor = nil
+	if fullscreen {
+		mon = pixelgl.PrimaryMonitor()
+	}
+	win.SetMonitor(mon)
 }
 
 func makeGLWindow() *pixelgl.Window {
