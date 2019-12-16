@@ -37,12 +37,15 @@ func run() {
 			lastFPSCheck = time.Now()
 		}
 		world.FPSText.Clear()
-		world.FPSText.WriteString(strconv.Itoa(currentFPS))
+		_, err := world.FPSText.WriteString(strconv.Itoa(currentFPS))
+		if err != nil {
+			panic(err)
+		}
+
 		deltaTime := time.Since(last).Seconds()
 		last = time.Now()
 
 		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
-
 		world.Update(win.Pressed, deltaTime)
 		world.Draw(win)
 
