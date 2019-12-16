@@ -27,12 +27,18 @@ func run() {
 	fps := time.Tick(time.Second / 60)
 
 	world := game.NewWorld(loadTerrainSprites())
+	gamepad := game.NewGamepad(win)
 
 	last := time.Now()
 	lastFPSCheck := time.Now()
 	frameCount := 0
 	currentFPS := 0
 	for !win.Closed() {
+		if win.JustReleased(pixelgl.KeyEscape) {
+			win.Destroy()
+			os.Exit(0)
+		}
+
 		if win.JustReleased(pixelgl.KeyF) {
 			toggleFullscreen(win)
 		}
@@ -60,7 +66,7 @@ func run() {
 		last = time.Now()
 
 		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
-		world.Update(win.Pressed, deltaTime)
+		world.Update(gamepad, deltaTime)
 		world.Draw(win)
 
 		win.Update()
@@ -101,7 +107,7 @@ func toggleFullscreen(win *pixelgl.Window) {
 	fullscreen = !fullscreen
 	var mon *pixelgl.Monitor = nil
 	if fullscreen {
-		mon = pixelgl.PrimaryMonitor()
+		mon = getMonitor()
 	}
 	win.SetMonitor(mon)
 }
@@ -117,6 +123,15 @@ func makeGLWindow() *pixelgl.Window {
 		panic(err)
 	}
 	return win
+}
+
+func getMonitor() *pixelgl.Monitor {
+	for _, mon := range pixelgl.Monitors() {
+		if mon.Name() == "UMC SHARP" {
+			return mon
+		}
+	}
+	return pixelgl.PrimaryMonitor()
 }
 
 func main() {

@@ -1,7 +1,6 @@
 package game
 
 import (
-	"math/rand"
 	"unicode"
 
 	"github.com/faiface/pixel"
@@ -14,8 +13,8 @@ import (
 
 const (
 	TILE_SIZE         = 32
-	SCALE             = 2
-	CAM_SPEED         = 80.0
+	SCALE             = 3
+	CAM_SPEED         = 160.0
 	GRASS_TILES_START = 9
 	GRASS_TILES_END   = 11
 )
@@ -31,17 +30,13 @@ func ttfFromBytesMust(b []byte, size float64) font.Face {
 	})
 }
 
-func computeTilesToRender(rec pixel.Rect) (int, int) {
-	return int(rec.W() / 32), int(rec.H() / 32)
-}
-
 func NewWorld(s pixel.Picture, tt []pixel.Rect) *World {
 	world := &World{
 		spriteSheet: s,
 		FPSText: text.New(
 			pixel.V(0, 0),
 			text.NewAtlas(
-				ttfFromBytesMust(goregular.TTF, 48), text.ASCII, text.RangeTable(unicode.Latin),
+				ttfFromBytesMust(goregular.TTF, SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
 			),
 		),
 		camPos: pixel.ZV,
@@ -61,20 +56,20 @@ type World struct {
 	camPos      pixel.Vec
 }
 
-func (w *World) Update(pressed func(pixelgl.Button) bool, dt float64) {
-	if pressed(pixelgl.KeyA) {
+func (w *World) Update(gp *Gamepad, dt float64) {
+	if gp.MovingLeft() {
 		w.camPos.X -= CAM_SPEED * dt
 	}
 
-	if pressed(pixelgl.KeyD) {
+	if gp.MovingRight() {
 		w.camPos.X += CAM_SPEED * dt
 	}
 
-	if pressed(pixelgl.KeyW) {
+	if gp.MovingUp() {
 		w.camPos.Y += CAM_SPEED * dt
 	}
 
-	if pressed(pixelgl.KeyS) {
+	if gp.MovingDown() {
 		w.camPos.Y -= CAM_SPEED * dt
 	}
 }
@@ -82,9 +77,15 @@ func (w *World) Update(pressed func(pixelgl.Button) bool, dt float64) {
 func (w *World) Draw(win *pixelgl.Window) {
 	cam := pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(cam)
+
+	for x := 0; x < 15; x++ {
+		for y := 0; y < 15; y++ {
+			grass := w.grassTiles[1]
+			grass.Draw(win, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
+		}
+	}
+
 	w.FPSText.Draw(
-		win, pixel.IM.Moved(cam.Unproject(pixel.V(0, win.Bounds().H()-(w.FPSText.LineHeight+(w.FPSText.LineHeight/1.8))))),
+		win, pixel.IM.Moved(cam.Unproject(pixel.V(w.FPSText.TabWidth, win.Bounds().H()-(w.FPSText.LineHeight+(win.Bounds().H()/13))))),
 	)
 }
-
-func ranRange(min, max int) int { return rand.Intn(max-min) + min }
