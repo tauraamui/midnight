@@ -28,8 +28,11 @@ func run() {
 	for !win.Closed() {
 		deltaTime := time.Since(last).Seconds()
 		last = time.Now()
-		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 1})
-		world.Draw(win, deltaTime)
+
+		world.Update(win.Pressed, deltaTime)
+		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
+		world.Draw(win)
+
 		win.Update()
 		<-fps
 	}
