@@ -41,7 +41,7 @@ func NewWorld(s pixel.Picture, tt []pixel.Rect) *World {
 		FPSText: text.New(
 			pixel.V(0, 0),
 			text.NewAtlas(
-				ttfFromBytesMust(goregular.TTF, 42), text.ASCII, text.RangeTable(unicode.Latin),
+				ttfFromBytesMust(goregular.TTF, 48), text.ASCII, text.RangeTable(unicode.Latin),
 			),
 		),
 		camPos: pixel.ZV,
@@ -83,7 +83,7 @@ func (w *World) Draw(win *pixelgl.Window) {
 	cam := pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(cam)
 	w.FPSText.Draw(
-		win, pixel.IM.Moved(cam.Unproject(pixel.V(0, win.Bounds().H()-(w.FPSText.LineHeight+25)))),
+		win, pixel.IM.Moved(cam.Unproject(pixel.V(0, win.Bounds().H()-(w.FPSText.LineHeight+(w.FPSText.LineHeight/1.8))))),
 	)
 }
 
