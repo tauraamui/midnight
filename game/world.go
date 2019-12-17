@@ -1,14 +1,8 @@
 package game
 
 import (
-	"unicode"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/faiface/pixel/text"
-	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 )
 
 const (
@@ -19,27 +13,11 @@ const (
 	GRASS_TILES_END   = 11
 )
 
-func ttfFromBytesMust(b []byte, size float64) font.Face {
-	ttf, err := truetype.Parse(b)
-	if err != nil {
-		panic(err)
-	}
-	return truetype.NewFace(ttf, &truetype.Options{
-		Size:              size,
-		GlyphCacheEntries: 1,
-	})
-}
-
 func NewWorld(s pixel.Picture, tt []pixel.Rect) *World {
 	world := &World{
 		spriteSheet: s,
-		FPSText: text.New(
-			pixel.V(0, 0),
-			text.NewAtlas(
-				ttfFromBytesMust(goregular.TTF, SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
-			),
-		),
-		camPos: pixel.ZV,
+		camPos:      pixel.ZV,
+		Camera:      pixel.IM,
 	}
 
 	for i := GRASS_TILES_START; i < GRASS_TILES_END; i++ {
@@ -50,10 +28,10 @@ func NewWorld(s pixel.Picture, tt []pixel.Rect) *World {
 }
 
 type World struct {
-	FPSText     *text.Text
 	spriteSheet pixel.Picture
 	grassTiles  []*pixel.Sprite
 	camPos      pixel.Vec
+	Camera      pixel.Matrix
 }
 
 func (w *World) Update(gp *Gamepad, dt float64) {
@@ -75,8 +53,8 @@ func (w *World) Update(gp *Gamepad, dt float64) {
 }
 
 func (w *World) Draw(win *pixelgl.Window) {
-	cam := pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
-	win.SetMatrix(cam)
+	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
+	win.SetMatrix(w.Camera)
 
 	for x := 0; x < 15; x++ {
 		for y := 0; y < 15; y++ {
@@ -84,8 +62,4 @@ func (w *World) Draw(win *pixelgl.Window) {
 			grass.Draw(win, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
 		}
 	}
-
-	w.FPSText.Draw(
-		win, pixel.IM.Moved(cam.Unproject(pixel.V(w.FPSText.TabWidth, win.Bounds().H()-(w.FPSText.LineHeight+(win.Bounds().H()/13))))),
-	)
 }

@@ -5,13 +5,18 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"unicode"
 
 	"image/color"
 	_ "image/png"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"github.com/golang/freetype/truetype"
 	"github.com/tauraamui/midnight/game"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goregular"
 )
 
 const (
@@ -33,6 +38,13 @@ func run() {
 	lastFPSCheck := time.Now()
 	frameCount := 0
 	currentFPS := 0
+
+	fpsText := text.New(
+		pixel.V(0, 0),
+		text.NewAtlas(
+			ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
+		),
+	)
 	for !win.Closed() {
 		if win.JustReleased(pixelgl.KeyEscape) {
 			win.Destroy()
@@ -45,21 +57,7 @@ func run() {
 
 		if win.JustReleased(pixelgl.KeyX) {
 			debugMode = !debugMode
-			world.FPSText.Clear()
-		}
-
-		if debugMode {
-			frameCount++
-			if time.Since(lastFPSCheck).Seconds() >= 1 {
-				currentFPS = frameCount
-				frameCount = 0
-				lastFPSCheck = time.Now()
-			}
-			world.FPSText.Clear()
-			_, err := world.FPSText.WriteString(strconv.Itoa(currentFPS))
-			if err != nil {
-				panic(err)
-			}
+			fpsText.Clear()
 		}
 
 		deltaTime := time.Since(last).Seconds()
@@ -68,6 +66,25 @@ func run() {
 		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 		world.Update(gamepad, deltaTime)
 		world.Draw(win)
+
+		if debugMode {
+			frameCount++
+			if time.Since(lastFPSCheck).Seconds() >= 1 {
+				currentFPS = frameCount
+				frameCount = 0
+				lastFPSCheck = time.Now()
+			}
+			fpsText.Draw(
+				win, pixel.IM.Moved(world.Camera.Unproject(pixel.V(fpsText.TabWidth, win.Bounds().H()-(fpsText.LineHeight+(win.Bounds().H()/13))))),
+			)
+			fpsText.Clear()
+			_, err := fpsText.WriteString(strconv.Itoa(currentFPS))
+			if err != nil {
+				panic(err)
+			}
+
+			println(gamepad.Debug())
+		}
 
 		win.Update()
 		<-fps
@@ -101,6 +118,17 @@ func loadSpritesheet(path string) (pixel.Picture, error) {
 		return nil, err
 	}
 	return pixel.PictureDataFromImage(img), nil
+}
+
+func ttfFromBytesMust(b []byte, size float64) font.Face {
+	ttf, err := truetype.Parse(b)
+	if err != nil {
+		panic(err)
+	}
+	return truetype.NewFace(ttf, &truetype.Options{
+		Size:              size,
+		GlyphCacheEntries: 1,
+	})
 }
 
 func toggleFullscreen(win *pixelgl.Window) {
