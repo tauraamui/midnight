@@ -35,20 +35,20 @@ type World struct {
 }
 
 func (w *World) Update(gp *Gamepad, dt float64) {
-	if gp.MovingLeft() {
-		w.camPos.X -= CAM_SPEED * dt
+	if speed, movingL := gp.MovingLeft(); movingL {
+		w.camPos.X -= (CAM_SPEED * speed) * dt
 	}
 
-	if gp.MovingRight() {
-		w.camPos.X += CAM_SPEED * dt
+	if speed, movingR := gp.MovingRight(); movingR {
+		w.camPos.X += (CAM_SPEED * speed) * dt
 	}
 
-	if gp.MovingUp() {
-		w.camPos.Y += CAM_SPEED * dt
+	if speed, movingU := gp.MovingUp(); movingU {
+		w.camPos.Y += (CAM_SPEED * speed) * dt
 	}
 
-	if gp.MovingDown() {
-		w.camPos.Y -= CAM_SPEED * dt
+	if speed, movingD := gp.MovingDown(); movingD {
+		w.camPos.Y -= (CAM_SPEED * speed) * dt
 	}
 }
 

@@ -76,36 +76,36 @@ func (gp *Gamepad) Update() bool {
 	return false
 }
 
-func (gp *Gamepad) MovingUp() bool {
+func (gp *Gamepad) MovingUp() (float64, bool) {
 	jsAttached := gp.Update()
 	if jsAttached {
-		return gp.joystick.axii[1] <= -0.55
+		return gp.joystick.axii[1] * -1, gp.joystick.axii[1] <= -0.20
 	}
-	return gp.win.Pressed(pixelgl.KeyW)
+	return 1, gp.win.Pressed(pixelgl.KeyW)
 }
 
-func (gp *Gamepad) MovingRight() bool {
+func (gp *Gamepad) MovingRight() (float64, bool) {
 	jsAttached := gp.Update()
 	if jsAttached {
-		return gp.joystick.axii[0] >= 0.55
+		return gp.joystick.axii[0], gp.joystick.axii[0] >= 0.20
 	}
-	return gp.win.Pressed(pixelgl.KeyD)
+	return 1, gp.win.Pressed(pixelgl.KeyD)
 }
 
-func (gp *Gamepad) MovingDown() bool {
+func (gp *Gamepad) MovingDown() (float64, bool) {
 	jsAttached := gp.Update()
 	if jsAttached {
-		return gp.joystick.axii[1] >= 0.55
+		return gp.joystick.axii[1], gp.joystick.axii[1] >= 0.20
 	}
-	return gp.win.Pressed(pixelgl.KeyS)
+	return 1, gp.win.Pressed(pixelgl.KeyS)
 }
 
-func (gp *Gamepad) MovingLeft() bool {
+func (gp *Gamepad) MovingLeft() (float64, bool) {
 	jsAttached := gp.Update()
 	if jsAttached {
-		return gp.joystick.axii[0] <= -0.55
+		return gp.joystick.axii[0] * -1, gp.joystick.axii[0] <= -0.20
 	}
-	return gp.win.Pressed(pixelgl.KeyA)
+	return 1, gp.win.Pressed(pixelgl.KeyA)
 }
 
 func (gp *Gamepad) Debug() string {
