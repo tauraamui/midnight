@@ -96,7 +96,7 @@ func run() {
 				panic(err)
 			}
 			gamepadText.Draw(
-				win, pixel.IM.Moved(world.Camera.Unproject(pixel.V(5, win.Bounds().H()/60))),
+				win, pixel.IM.Moved(world.Camera.Unproject(pixel.V(20, win.Bounds().H()/60))),
 			)
 		}
 

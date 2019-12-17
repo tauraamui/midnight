@@ -1,7 +1,7 @@
 package game
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -31,7 +31,15 @@ func (js *JS) Update() {
 }
 
 func (js *JS) Debug() string {
-	return fmt.Sprintf("AXII: %#v", js.axii)
+	debugString := "["
+	for i := 0; i < len(js.axii); i++ {
+		debugString += strconv.FormatFloat(js.axii[i], 'f', 3, 64)
+		if i+1 < len(js.axii) {
+			debugString += ", "
+		}
+	}
+	debugString += "]"
+	return debugString
 }
 
 type Gamepad struct {
