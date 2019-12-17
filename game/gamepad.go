@@ -20,14 +20,15 @@ func NewJS(win *pixelgl.Window, js *pixelgl.Joystick) *JS {
 	return &joystick
 }
 
-func (js *JS) Update() {
+func (js *JS) Update() bool {
 	if js.win.JoystickPresent(*js.input) {
 		for i := 0; i < len(js.axii); i++ {
 			js.axii[i] = js.win.JoystickAxis(*js.input, i)
 		}
-	} else {
-		js.axii = nil
+		return true
 	}
+	js.axii = make([]float64, len(js.axii))
+	return false
 }
 
 func (js *JS) Debug() string {
@@ -64,29 +65,46 @@ func (gp *Gamepad) AttachToJoystick() {
 	}
 }
 
-func (gp *Gamepad) Update() {
+func (gp *Gamepad) Update() bool {
 	if gp.joystick != nil {
-		gp.joystick.Update()
+		present := gp.joystick.Update()
+		if present {
+			return true
+		}
+		gp.joystick = nil
 	}
+	return false
 }
 
 func (gp *Gamepad) MovingUp() bool {
-	gp.Update()
+	jsAttached := gp.Update()
+	if jsAttached {
+		return gp.joystick.axii[1] <= -0.55
+	}
 	return gp.win.Pressed(pixelgl.KeyW)
 }
 
 func (gp *Gamepad) MovingRight() bool {
-	gp.Update()
+	jsAttached := gp.Update()
+	if jsAttached {
+		return gp.joystick.axii[0] >= 0.55
+	}
 	return gp.win.Pressed(pixelgl.KeyD)
 }
 
 func (gp *Gamepad) MovingDown() bool {
-	gp.Update()
+	jsAttached := gp.Update()
+	if jsAttached {
+		return gp.joystick.axii[1] >= 0.55
+	}
 	return gp.win.Pressed(pixelgl.KeyS)
 }
 
 func (gp *Gamepad) MovingLeft() bool {
-	gp.Update()
+	jsAttached := gp.Update()
+	if jsAttached {
+		return gp.joystick.axii[0] <= -0.55
+	}
 	return gp.win.Pressed(pixelgl.KeyA)
 }
 
