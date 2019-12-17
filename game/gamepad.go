@@ -58,26 +58,35 @@ func NewGamepad(win *pixelgl.Window) *Gamepad {
 	return &gp
 }
 
+func (gp *Gamepad) Update() {
+	if gp.joystick != nil {
+		gp.joystick.Update()
+	}
+}
+
 func (gp *Gamepad) MovingUp() bool {
-	gp.joystick.Update()
+	gp.Update()
 	return gp.win.Pressed(pixelgl.KeyW)
 }
 
 func (gp *Gamepad) MovingRight() bool {
-	gp.joystick.Update()
+	gp.Update()
 	return gp.win.Pressed(pixelgl.KeyD)
 }
 
 func (gp *Gamepad) MovingDown() bool {
-	gp.joystick.Update()
+	gp.Update()
 	return gp.win.Pressed(pixelgl.KeyS)
 }
 
 func (gp *Gamepad) MovingLeft() bool {
-	gp.joystick.Update()
+	gp.Update()
 	return gp.win.Pressed(pixelgl.KeyA)
 }
 
 func (gp *Gamepad) Debug() string {
-	return gp.joystick.Debug()
+	if gp.joystick != nil {
+		return gp.joystick.Debug()
+	}
+	return "[]"
 }
