@@ -36,6 +36,7 @@ func run() {
 
 	last := time.Now()
 	lastFPSCheck := time.Now()
+	lastGamepadScan := time.Now()
 	frameCount := 0
 	currentFPS := 0
 
@@ -69,6 +70,13 @@ func run() {
 
 		deltaTime := time.Since(last).Seconds()
 		last = time.Now()
+
+		if time.Since(lastGamepadScan).Seconds() >= 3 {
+			if !gamepad.JoystickAttached() {
+				gamepad.AttachToJoystick()
+			}
+			lastGamepadScan = time.Now()
+		}
 
 		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 		world.Update(gamepad, deltaTime)

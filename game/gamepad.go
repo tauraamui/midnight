@@ -49,13 +49,19 @@ type Gamepad struct {
 
 func NewGamepad(win *pixelgl.Window) *Gamepad {
 	gp := Gamepad{win: win}
+	gp.AttachToJoystick()
+	return &gp
+}
+
+func (gp *Gamepad) JoystickAttached() bool { return gp.joystick != nil }
+
+func (gp *Gamepad) AttachToJoystick() {
 	for js := pixelgl.Joystick1; js < pixelgl.JoystickLast; js++ {
-		if win.JoystickPresent(js) {
-			gp.joystick = NewJS(win, &js)
+		if gp.win.JoystickPresent(js) {
+			gp.joystick = NewJS(gp.win, &js)
 			break
 		}
 	}
-	return &gp
 }
 
 func (gp *Gamepad) Update() {
@@ -88,5 +94,5 @@ func (gp *Gamepad) Debug() string {
 	if gp.joystick != nil {
 		return gp.joystick.Debug()
 	}
-	return "[]"
+	return "NO GAMEPAD ATTACHED"
 }
