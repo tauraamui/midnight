@@ -45,6 +45,13 @@ func run() {
 			ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
 		),
 	)
+
+	gamepadText := text.New(
+		pixel.V(0, 0),
+		text.NewAtlas(
+			ttfFromBytesMust(goregular.TTF, game.SCALE*3), text.ASCII, text.RangeTable(unicode.Latin),
+		),
+	)
 	for !win.Closed() {
 		if win.JustReleased(pixelgl.KeyEscape) {
 			win.Destroy()
@@ -83,7 +90,14 @@ func run() {
 				panic(err)
 			}
 
-			println(gamepad.Debug())
+			gamepadText.Clear()
+			_, err = gamepadText.WriteString(gamepad.Debug())
+			if err != nil {
+				panic(err)
+			}
+			gamepadText.Draw(
+				win, pixel.IM.Moved(world.Camera.Unproject(pixel.V(5, win.Bounds().H()/60))),
+			)
 		}
 
 		win.Update()
