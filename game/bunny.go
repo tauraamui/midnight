@@ -2,18 +2,22 @@ package game
 
 import "github.com/faiface/pixel"
 
+import "github.com/tauraamui/midnight/sprite"
+
 type Bunny struct {
-	spriteSheet       pixel.Picture
-	leftMotionSprites []*pixel.Sprite
+	spriteSheet        pixel.Picture
+	rightMotionSprites []*pixel.Sprite
+	leftMotionSprites  []*pixel.Sprite
 }
 
-func NewBunny(s pixel.Picture, tt []pixel.Rect) *Bunny {
+func NewBunny(s pixel.Picture) *Bunny {
 	bunny := Bunny{
 		spriteSheet: s,
 	}
 
-	for i := 0; i < 3; i++ {
-		bunny.leftMotionSprites = append(bunny.leftMotionSprites, pixel.NewSprite(bunny.spriteSheet, tt[i]))
+	for i := 0; i < 4; i++ {
+		bunny.rightMotionSprites = append(bunny.rightMotionSprites, sprite.Make(bunny.spriteSheet, i, 0))
+		bunny.leftMotionSprites = append(bunny.leftMotionSprites, sprite.Make(bunny.spriteSheet, i, 1))
 	}
 
 	return &bunny
