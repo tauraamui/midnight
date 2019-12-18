@@ -3,8 +3,6 @@ github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 h1:FvZ0mIGh6b3kOITxUn
 github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380/go.mod h1:zqnPFFIuYFFxl7uH2gYByJwIVKG7fRqlqQCbzAnHs9g=
 github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 h1:baVdMKlASEHrj19iqjARrPbaRisD7EuZEVJj6ZMLl1Q=
 github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3/go.mod h1:VEPNJUlxl5KdWjDvz6Q1l+rJlxF2i6xqDeGuGAxa87M=
-github.com/faiface/pixel v0.8.0 h1:phOHW6ixfMAKRamjnvhI6FFI2VRyPEq7+LmmkDGXB/4=
-github.com/faiface/pixel v0.8.0/go.mod h1:CEUU/s9E82Kqp01Boj1O67KnBskqiLghANqvUJGgDAM=
 github.com/faiface/pixel v0.8.1-0.20191105235048-e51d4a6676fa h1:Jd2aQS/IgpoBnjTpmPmAjaNJHze3Ik0kY0j8z/jltz0=
 github.com/faiface/pixel v0.8.1-0.20191105235048-e51d4a6676fa/go.mod h1:WkLfLymV31e/Ogv5OR3vtrNxRktTO3WXGWXiiSEg/j4=
 github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 h1:SCYMcCJ89LjRGwEa0tRluNRiMjZHalQZrVrvTbPh+qw=

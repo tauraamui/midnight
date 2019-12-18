@@ -113,20 +113,12 @@ func run() {
 	}
 }
 
-func loadTerrainSprites() (pixel.Picture, []pixel.Rect) {
-	s, err := loadSpritesheet("assets/terrain.png")
+func loadTerrainSprites() pixel.Picture {
+	s, err := loadSpritesheet("./assets/terrain.png")
 	if err != nil {
 		panic(err)
 	}
-
-	var terrainTiles []pixel.Rect
-	for x := s.Bounds().Min.X; x < s.Bounds().Max.X; x += 32 {
-		for y := s.Bounds().Min.Y; y < s.Bounds().Max.Y; y += 32 {
-			terrainTiles = append(terrainTiles, pixel.R(x, y, x+32, y+32))
-		}
-	}
-
-	return s, terrainTiles
+	return s
 }
 
 func loadSpritesheet(path string) (pixel.Picture, error) {

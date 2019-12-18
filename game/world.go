@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/tauraamui/midnight/sprite"
 )
 
 const (
@@ -13,25 +14,23 @@ const (
 	GRASS_TILES_END   = 11
 )
 
-func NewWorld(s pixel.Picture, tt []pixel.Rect) *World {
-	world := &World{
-		spriteSheet: s,
-		camPos:      pixel.ZV,
-		Camera:      pixel.IM,
-	}
-
-	for i := GRASS_TILES_START; i < GRASS_TILES_END; i++ {
-		world.grassTiles = append(world.grassTiles, pixel.NewSprite(world.spriteSheet, tt[i]))
-	}
-
-	return world
-}
-
 type World struct {
 	spriteSheet pixel.Picture
 	grassTiles  []*pixel.Sprite
 	camPos      pixel.Vec
 	Camera      pixel.Matrix
+}
+
+func NewWorld(s pixel.Picture) *World {
+	world := World{
+		spriteSheet: s,
+		camPos:      pixel.ZV,
+		Camera:      pixel.IM,
+	}
+
+	world.grassTiles = append(world.grassTiles, sprite.Make(world.spriteSheet, 1, 0))
+
+	return &world
 }
 
 func (w *World) Update(gp *Gamepad, dt float64) {
@@ -58,7 +57,7 @@ func (w *World) Draw(win *pixelgl.Window) {
 
 	for x := 0; x < 15; x++ {
 		for y := 0; y < 15; y++ {
-			grass := w.grassTiles[1]
+			grass := w.grassTiles[0]
 			grass.Draw(win, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
 		}
 	}
