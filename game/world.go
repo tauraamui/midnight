@@ -8,7 +8,7 @@ import (
 
 const (
 	TILE_SIZE         = 32
-	SCALE             = 12
+	SCALE             = 3
 	CAM_SPEED         = 160.0
 	GRASS_TILES_START = 9
 	GRASS_TILES_END   = 11

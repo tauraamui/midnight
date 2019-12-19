@@ -42,14 +42,14 @@ func run() {
 	fpsText := text.New(
 		pixel.V(0, 0),
 		text.NewAtlas(
-			ttfFromBytesMust(goregular.TTF, game.SCALE*4), text.ASCII, text.RangeTable(unicode.Latin),
+			ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
 		),
 	)
 
 	gamepadText := text.New(
 		pixel.V(0, 0),
 		text.NewAtlas(
-			ttfFromBytesMust(goregular.TTF, game.SCALE*1.5), text.ASCII, text.RangeTable(unicode.Latin),
+			ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
 		),
 	)
 	for !win.Closed() {
@@ -91,7 +91,7 @@ func run() {
 
 			win.SetMatrix(pixel.IM)
 			fpsText.Draw(
-				win, pixel.IM.Moved(pixel.V(15, win.Bounds().H()-fpsText.LineHeight)),
+				win, pixel.IM.Moved(pixel.V(20, (win.Bounds().H()-fpsText.LineHeight)-10)),
 			)
 			fpsText.Clear()
 			_, err := fpsText.WriteString(strconv.Itoa(currentFPS))
