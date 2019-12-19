@@ -43,7 +43,7 @@ func (b *Bunny) Draw(
 		b.animSprites = b.leftMotionSprites
 	}
 
-	if animSpeed > 0 && time.Since(b.sinceAnimFrameSwitch).Milliseconds() >= calcTimeTwixtSwitchMS(100, animSpeed) {
+	if animSpeed > 0 && time.Since(b.sinceAnimFrameSwitch).Milliseconds() >= calcTimeTwixtSwitchMS(300, animSpeed) {
 		b.currentAnimFrameIndex++
 		if b.currentAnimFrameIndex >= len(b.animSprites) {
 			b.currentAnimFrameIndex = 0
