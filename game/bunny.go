@@ -10,6 +10,7 @@ import (
 
 type Bunny struct {
 	spriteSheet           pixel.Picture
+	animSprites           []*pixel.Sprite
 	rightMotionSprites    []*pixel.Sprite
 	leftMotionSprites     []*pixel.Sprite
 	currentAnimFrameIndex int
@@ -26,15 +27,31 @@ func NewBunny() *Bunny {
 	return &bunny
 }
 
-func (b *Bunny) Draw(win *pixelgl.Window, matrix pixel.Matrix, animSpeed float64) {
+func (b *Bunny) Draw(
+	win *pixelgl.Window,
+	matrix pixel.Matrix,
+	animSpeed float64,
+	movingL, movingR, movingU, movingD bool,
+) {
+
+	// println("MOVING L:", movingL, "MOVING R:", movingR, "MOVING U:", movingU, "MOVING D:", movingD)
+	if movingR {
+		b.animSprites = b.rightMotionSprites
+	}
+
+	if movingL {
+		b.animSprites = b.leftMotionSprites
+	}
+
 	if animSpeed > 0 && time.Since(b.sinceAnimFrameSwitch).Milliseconds() >= calcTimeTwixtSwitchMS(100, animSpeed) {
 		b.currentAnimFrameIndex++
-		if b.currentAnimFrameIndex >= len(b.rightMotionSprites) {
+		if b.currentAnimFrameIndex >= len(b.animSprites) {
 			b.currentAnimFrameIndex = 0
 		}
 		b.sinceAnimFrameSwitch = time.Now()
 	}
-	b.rightMotionSprites[b.currentAnimFrameIndex].Draw(win, matrix)
+
+	b.animSprites[b.currentAnimFrameIndex].Draw(win, matrix)
 }
 
 func (b *Bunny) loadSprites() {
@@ -48,6 +65,8 @@ func (b *Bunny) loadSprites() {
 		b.rightMotionSprites = append(b.rightMotionSprites, sprite.Make(b.spriteSheet, i, 0, 48))
 		b.leftMotionSprites = append(b.leftMotionSprites, sprite.Make(b.spriteSheet, i, 1, 48))
 	}
+
+	b.animSprites = b.rightMotionSprites
 }
 
 func calcTimeTwixtSwitchMS(normal, speed float64) int64 {

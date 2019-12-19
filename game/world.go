@@ -18,10 +18,11 @@ type World struct {
 	Camera pixel.Matrix
 	Bunny  *Bunny
 
-	camPos          pixel.Vec
-	spriteSheet     pixel.Picture
-	grassTiles      []*pixel.Sprite
-	currentVelocity float64
+	camPos                             pixel.Vec
+	movingL, movingR, movingU, movingD bool
+	spriteSheet                        pixel.Picture
+	grassTiles                         []*pixel.Sprite
+	currentVelocity                    float64
 }
 
 func NewWorld() *World {
@@ -37,23 +38,28 @@ func NewWorld() *World {
 
 func (w *World) Update(gp *Gamepad, dt float64) {
 	w.currentVelocity = 0
+	w.movingL, w.movingR, w.movingU, w.movingD = false, false, false, false
 
 	if speed, movingL := gp.MovingLeft(); movingL {
+		w.movingL = movingL
 		w.currentVelocity = (CAM_SPEED * speed) * dt
 		w.camPos.X -= w.currentVelocity
 	}
 
 	if speed, movingR := gp.MovingRight(); movingR {
+		w.movingR = movingR
 		w.currentVelocity = (CAM_SPEED * speed) * dt
 		w.camPos.X += w.currentVelocity
 	}
 
 	if speed, movingU := gp.MovingUp(); movingU {
+		w.movingU = movingU
 		w.currentVelocity = (CAM_SPEED * speed) * dt
 		w.camPos.Y += w.currentVelocity
 	}
 
 	if speed, movingD := gp.MovingDown(); movingD {
+		w.movingD = movingD
 		w.currentVelocity = (CAM_SPEED * speed) * dt
 		w.camPos.Y -= w.currentVelocity
 	}
@@ -71,7 +77,11 @@ func (w *World) Draw(win *pixelgl.Window) {
 	}
 
 	win.SetMatrix(pixel.IM)
-	w.Bunny.Draw(win, pixel.IM.Moved(win.Bounds().Center()), w.currentVelocity)
+	w.Bunny.Draw(
+		win,
+		pixel.IM.Moved(win.Bounds().Center()), w.currentVelocity,
+		w.movingL, w.movingR, w.movingU, w.movingD,
+	)
 }
 
 func (w *World) loadSprites() {
