@@ -34,7 +34,6 @@ func (b *Bunny) Draw(
 	movingL, movingR, movingU, movingD bool,
 ) {
 
-	// println("MOVING L:", movingL, "MOVING R:", movingR, "MOVING U:", movingU, "MOVING D:", movingD)
 	if movingR {
 		b.animSprites = b.rightMotionSprites
 	}
