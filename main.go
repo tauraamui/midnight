@@ -42,14 +42,14 @@ func run() {
 	fpsText := text.New(
 		pixel.V(0, 0),
 		text.NewAtlas(
-			ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
+			ttfFromBytesMust(goregular.TTF, game.SCALE*4), text.ASCII, text.RangeTable(unicode.Latin),
 		),
 	)
 
 	gamepadText := text.New(
 		pixel.V(0, 0),
 		text.NewAtlas(
-			ttfFromBytesMust(goregular.TTF, game.SCALE*3), text.ASCII, text.RangeTable(unicode.Latin),
+			ttfFromBytesMust(goregular.TTF, game.SCALE*1.5), text.ASCII, text.RangeTable(unicode.Latin),
 		),
 	)
 	for !win.Closed() {
@@ -87,12 +87,11 @@ func run() {
 				currentFPS = frameCount
 				frameCount = 0
 				lastFPSCheck = time.Now()
-				println(fpsText.LineHeight + 100.0)
 			}
 
 			win.SetMatrix(pixel.IM)
 			fpsText.Draw(
-				win, pixel.IM.Moved(pixel.V(10, win.Bounds().H()-fpsText.LineHeight)),
+				win, pixel.IM.Moved(pixel.V(15, win.Bounds().H()-fpsText.LineHeight)),
 			)
 			fpsText.Clear()
 			_, err := fpsText.WriteString(strconv.Itoa(currentFPS))
@@ -105,7 +104,7 @@ func run() {
 			if err != nil {
 				panic(err)
 			}
-			gamepadText.Draw(win, pixel.IM.Moved(pixel.V(5, 10)))
+			gamepadText.Draw(win, pixel.IM.Moved(pixel.V(15, 10)))
 		}
 
 		win.Update()
