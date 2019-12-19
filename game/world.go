@@ -8,23 +8,26 @@ import (
 
 const (
 	TILE_SIZE         = 32
-	SCALE             = 3
+	SCALE             = 6
 	CAM_SPEED         = 160.0
 	GRASS_TILES_START = 9
 	GRASS_TILES_END   = 11
 )
 
 type World struct {
+	Camera pixel.Matrix
+	Bunny  *Bunny
+
+	camPos      pixel.Vec
 	spriteSheet pixel.Picture
 	grassTiles  []*pixel.Sprite
-	camPos      pixel.Vec
-	Camera      pixel.Matrix
 }
 
 func NewWorld() *World {
 	world := World{
-		camPos: pixel.ZV,
 		Camera: pixel.IM,
+		Bunny:  NewBunny(),
+		camPos: pixel.ZV,
 	}
 	world.loadSprites()
 
@@ -59,6 +62,9 @@ func (w *World) Draw(win *pixelgl.Window) {
 			grass.Draw(win, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
 		}
 	}
+
+	win.SetMatrix(pixel.IM)
+	w.Bunny.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 }
 
 func (w *World) loadSprites() {
@@ -68,5 +74,5 @@ func (w *World) loadSprites() {
 	}
 
 	w.spriteSheet = s
-	w.grassTiles = append(w.grassTiles, sprite.Make(w.spriteSheet, 1, 0))
+	w.grassTiles = append(w.grassTiles, sprite.Make(w.spriteSheet, 1, 0, 32))
 }

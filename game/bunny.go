@@ -1,8 +1,10 @@
 package game
 
-import "github.com/faiface/pixel"
-
-import "github.com/tauraamui/midnight/sprite"
+import (
+	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
+	"github.com/tauraamui/midnight/sprite"
+)
 
 type Bunny struct {
 	spriteSheet        pixel.Picture
@@ -17,6 +19,10 @@ func NewBunny() *Bunny {
 	return &bunny
 }
 
+func (b *Bunny) Draw(win *pixelgl.Window, matrix pixel.Matrix) {
+	b.rightMotionSprites[0].Draw(win, matrix)
+}
+
 func (b *Bunny) loadSprites() {
 	s, err := sprite.LoadSpritesheet("./assets/bunny.png")
 	if err != nil {
@@ -25,7 +31,7 @@ func (b *Bunny) loadSprites() {
 
 	b.spriteSheet = s
 	for i := 0; i < 4; i++ {
-		b.rightMotionSprites = append(b.rightMotionSprites, sprite.Make(b.spriteSheet, i, 0))
-		b.leftMotionSprites = append(b.leftMotionSprites, sprite.Make(b.spriteSheet, i, 1))
+		b.rightMotionSprites = append(b.rightMotionSprites, sprite.Make(b.spriteSheet, i, 0, 48))
+		b.leftMotionSprites = append(b.leftMotionSprites, sprite.Make(b.spriteSheet, i, 1, 48))
 	}
 }

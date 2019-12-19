@@ -87,9 +87,12 @@ func run() {
 				currentFPS = frameCount
 				frameCount = 0
 				lastFPSCheck = time.Now()
+				println(fpsText.LineHeight + 100.0)
 			}
+
+			win.SetMatrix(pixel.IM)
 			fpsText.Draw(
-				win, pixel.IM.Moved(world.Camera.Unproject(pixel.V(fpsText.TabWidth, win.Bounds().H()-(fpsText.LineHeight+(win.Bounds().H()/13))))),
+				win, pixel.IM.Moved(pixel.V(10, win.Bounds().H()-fpsText.LineHeight)),
 			)
 			fpsText.Clear()
 			_, err := fpsText.WriteString(strconv.Itoa(currentFPS))
@@ -102,9 +105,7 @@ func run() {
 			if err != nil {
 				panic(err)
 			}
-			gamepadText.Draw(
-				win, pixel.IM.Moved(world.Camera.Unproject(pixel.V(20, win.Bounds().H()/60))),
-			)
+			gamepadText.Draw(win, pixel.IM.Moved(pixel.V(5, 10)))
 		}
 
 		win.Update()
