@@ -2,6 +2,8 @@ package sprite
 
 import (
 	"errors"
+	"image"
+	"os"
 
 	"github.com/faiface/pixel"
 )
@@ -29,6 +31,19 @@ func Make(sheet pixel.Picture, x, y int) *pixel.Sprite {
 	return pixel.NewSprite(
 		sheet, pixel.R(float64(realX), float64(realY), float64(realX)+32, float64(realY)+32),
 	)
+}
+
+func LoadSpritesheet(path string) (pixel.Picture, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+	return pixel.PictureDataFromImage(img), nil
 }
 
 func spritesheetDimsIncorrectPanic() { panic(errors.New("spritesheet bounds not divisible by 32px")) }

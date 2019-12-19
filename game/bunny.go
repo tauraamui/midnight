@@ -10,15 +10,22 @@ type Bunny struct {
 	leftMotionSprites  []*pixel.Sprite
 }
 
-func NewBunny(s pixel.Picture) *Bunny {
-	bunny := Bunny{
-		spriteSheet: s,
-	}
-
-	for i := 0; i < 4; i++ {
-		bunny.rightMotionSprites = append(bunny.rightMotionSprites, sprite.Make(bunny.spriteSheet, i, 0))
-		bunny.leftMotionSprites = append(bunny.leftMotionSprites, sprite.Make(bunny.spriteSheet, i, 1))
-	}
+func NewBunny() *Bunny {
+	bunny := Bunny{}
+	bunny.loadSprites()
 
 	return &bunny
+}
+
+func (b *Bunny) loadSprites() {
+	s, err := sprite.LoadSpritesheet("./assets/bunny.png")
+	if err != nil {
+		panic(err)
+	}
+
+	b.spriteSheet = s
+	for i := 0; i < 4; i++ {
+		b.rightMotionSprites = append(b.rightMotionSprites, sprite.Make(b.spriteSheet, i, 0))
+		b.leftMotionSprites = append(b.leftMotionSprites, sprite.Make(b.spriteSheet, i, 1))
+	}
 }

@@ -21,14 +21,12 @@ type World struct {
 	Camera      pixel.Matrix
 }
 
-func NewWorld(s pixel.Picture) *World {
+func NewWorld() *World {
 	world := World{
-		spriteSheet: s,
-		camPos:      pixel.ZV,
-		Camera:      pixel.IM,
+		camPos: pixel.ZV,
+		Camera: pixel.IM,
 	}
-
-	world.grassTiles = append(world.grassTiles, sprite.Make(world.spriteSheet, 1, 0))
+	world.loadSprites()
 
 	return &world
 }
@@ -61,4 +59,14 @@ func (w *World) Draw(win *pixelgl.Window) {
 			grass.Draw(win, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
 		}
 	}
+}
+
+func (w *World) loadSprites() {
+	s, err := sprite.LoadSpritesheet("./assets/terrain.png")
+	if err != nil {
+		panic(err)
+	}
+
+	w.spriteSheet = s
+	w.grassTiles = append(w.grassTiles, sprite.Make(w.spriteSheet, 1, 0))
 }

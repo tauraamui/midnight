@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image"
 	"os"
 	"strconv"
 	"time"
@@ -31,7 +30,7 @@ func run() {
 	win := makeGLWindow()
 	fps := time.Tick(time.Second / 60)
 
-	world := game.NewWorld(loadTerrainSprites())
+	world := game.NewWorld()
 	gamepad := game.NewGamepad(win)
 
 	last := time.Now()
@@ -111,27 +110,6 @@ func run() {
 		win.Update()
 		<-fps
 	}
-}
-
-func loadTerrainSprites() pixel.Picture {
-	s, err := loadSpritesheet("./assets/terrain.png")
-	if err != nil {
-		panic(err)
-	}
-	return s
-}
-
-func loadSpritesheet(path string) (pixel.Picture, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	img, _, err := image.Decode(file)
-	if err != nil {
-		return nil, err
-	}
-	return pixel.PictureDataFromImage(img), nil
 }
 
 func ttfFromBytesMust(b []byte, size float64) font.Face {
