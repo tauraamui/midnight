@@ -71,8 +71,8 @@ func (w *World) Draw(win *pixelgl.Window) {
 	win.SetMatrix(w.Camera)
 
 	w.batch.Clear()
-	for x := 0; x < 15; x++ {
-		for y := 0; y < 15; y++ {
+	for x := 0; x < 50; x++ {
+		for y := 0; y < 50; y++ {
 			grass := w.grassTiles[0]
 			grass.Draw(w.batch, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
 		}
