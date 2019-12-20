@@ -76,10 +76,11 @@ func (w *World) Draw(win *pixelgl.Window) {
 		}
 	}
 
-	win.SetMatrix(pixel.IM)
+	w.Camera = pixel.IM
+	win.SetMatrix(w.Camera)
 	w.Bunny.Draw(
 		win,
-		pixel.IM.Moved(win.Bounds().Center()), w.currentVelocity,
+		w.currentVelocity,
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
 }

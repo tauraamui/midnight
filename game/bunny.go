@@ -31,7 +31,6 @@ func NewBunny() *Bunny {
 
 func (b *Bunny) Draw(
 	win *pixelgl.Window,
-	matrix pixel.Matrix,
 	animSpeed float64,
 	movingL, movingR, movingU, movingD bool,
 ) {
@@ -52,7 +51,7 @@ func (b *Bunny) Draw(
 		b.animSprites = b.downMotionSprites
 	}
 
-	if animSpeed > 0 && time.Since(b.sinceAnimFrameSwitch).Milliseconds() >= calcTimeTwixtSwitchMS(300, animSpeed) {
+	if animSpeed > 0 && time.Since(b.sinceAnimFrameSwitch).Milliseconds() >= calcTimeTwixtSwitchMS(150, animSpeed) {
 		b.currentAnimFrameIndex++
 		if b.currentAnimFrameIndex >= len(b.animSprites) {
 			b.currentAnimFrameIndex = 0
@@ -60,7 +59,7 @@ func (b *Bunny) Draw(
 		b.sinceAnimFrameSwitch = time.Now()
 	}
 
-	b.animSprites[b.currentAnimFrameIndex].Draw(win, matrix)
+	b.animSprites[b.currentAnimFrameIndex].Draw(win, pixel.IM.Scaled(pixel.ZV, SCALE).Moved(win.Bounds().Center()))
 }
 
 func (b *Bunny) loadSprites() {
