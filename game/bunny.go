@@ -13,6 +13,8 @@ type Bunny struct {
 	animSprites           []*pixel.Sprite
 	rightMotionSprites    []*pixel.Sprite
 	leftMotionSprites     []*pixel.Sprite
+	upMotionSprites       []*pixel.Sprite
+	downMotionSprites     []*pixel.Sprite
 	currentAnimFrameIndex int
 	sinceAnimFrameSwitch  time.Time
 }
@@ -42,6 +44,14 @@ func (b *Bunny) Draw(
 		b.animSprites = b.leftMotionSprites
 	}
 
+	if movingU {
+		b.animSprites = b.upMotionSprites
+	}
+
+	if movingD {
+		b.animSprites = b.downMotionSprites
+	}
+
 	if animSpeed > 0 && time.Since(b.sinceAnimFrameSwitch).Milliseconds() >= calcTimeTwixtSwitchMS(300, animSpeed) {
 		b.currentAnimFrameIndex++
 		if b.currentAnimFrameIndex >= len(b.animSprites) {
@@ -54,18 +64,20 @@ func (b *Bunny) Draw(
 }
 
 func (b *Bunny) loadSprites() {
-	s, err := sprite.LoadSpritesheet("./assets/bunny.png")
+	s, err := sprite.LoadSpritesheet("./assets/bunnysheet5.png")
 	if err != nil {
 		panic(err)
 	}
 
 	b.spriteSheet = s
-	for i := 0; i < 4; i++ {
-		b.rightMotionSprites = append(b.rightMotionSprites, sprite.Make(b.spriteSheet, i, 0, 48))
-		b.leftMotionSprites = append(b.leftMotionSprites, sprite.Make(b.spriteSheet, i, 1, 48))
+	for i := 0; i < 7; i++ {
+		b.upMotionSprites = append(b.upMotionSprites, sprite.Make(b.spriteSheet, i, 0, 48))
+		b.downMotionSprites = append(b.downMotionSprites, sprite.Make(b.spriteSheet, i, 1, 48))
+		b.rightMotionSprites = append(b.rightMotionSprites, sprite.Make(b.spriteSheet, i, 2, 48))
+		b.leftMotionSprites = append(b.leftMotionSprites, sprite.Make(b.spriteSheet, i, 3, 48))
 	}
 
-	b.animSprites = b.rightMotionSprites
+	b.animSprites = b.downMotionSprites
 }
 
 func calcTimeTwixtSwitchMS(normal, speed float64) int64 {
