@@ -19,8 +19,9 @@ import (
 )
 
 const (
-	WIN_WIDTH  = 800
-	WIN_HEIGHT = 600
+	WIN_WIDTH        = 800
+	WIN_HEIGHT       = 600
+	DEBUG_TEXT_SCALE = 3
 )
 
 var debugMode = false
@@ -91,7 +92,10 @@ func run() {
 
 			win.SetMatrix(pixel.IM)
 			fpsText.Draw(
-				win, pixel.IM.Moved(pixel.V(20, (win.Bounds().H()-fpsText.LineHeight)-10)),
+				win,
+				pixel.IM.Scaled(
+					pixel.ZV, DEBUG_TEXT_SCALE,
+				).Moved(pixel.V(20, (win.Bounds().H()-(fpsText.LineHeight*DEBUG_TEXT_SCALE))-10)),
 			)
 			fpsText.Clear()
 			_, err := fpsText.WriteString(strconv.Itoa(currentFPS))
@@ -104,7 +108,9 @@ func run() {
 			if err != nil {
 				panic(err)
 			}
-			gamepadText.Draw(win, pixel.IM.Moved(pixel.V(15, 10)))
+			gamepadText.Draw(win, pixel.IM.Scaled(
+				pixel.ZV, DEBUG_TEXT_SCALE,
+			).Moved(pixel.V(15, 10*DEBUG_TEXT_SCALE)))
 		}
 
 		win.Update()
