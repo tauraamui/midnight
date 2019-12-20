@@ -21,6 +21,7 @@ type World struct {
 	camPos                             pixel.Vec
 	movingL, movingR, movingU, movingD bool
 	spriteSheet                        pixel.Picture
+	batch                              *pixel.Batch
 	grassTiles                         []*pixel.Sprite
 	currentVelocity                    float64
 }
@@ -69,12 +70,14 @@ func (w *World) Draw(win *pixelgl.Window) {
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(w.Camera)
 
+	w.batch.Clear()
 	for x := 0; x < 15; x++ {
 		for y := 0; y < 15; y++ {
 			grass := w.grassTiles[0]
-			grass.Draw(win, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
+			grass.Draw(w.batch, pixel.IM.Moved(pixel.V(float64(x*(32)), float64(y*(32)))))
 		}
 	}
+	w.batch.Draw(win)
 
 	w.Camera = pixel.IM
 	win.SetMatrix(w.Camera)
@@ -92,5 +95,6 @@ func (w *World) loadSprites() {
 	}
 
 	w.spriteSheet = s
+	w.batch = pixel.NewBatch(&pixel.TrianglesData{}, w.spriteSheet)
 	w.grassTiles = append(w.grassTiles, sprite.Make(w.spriteSheet, 3, 0, 32))
 }
