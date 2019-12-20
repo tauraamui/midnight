@@ -28,31 +28,33 @@ var debugMode = false
 var fullscreen = false
 
 func run() {
-	win := makeGLWindow()
-	fps := time.Tick(time.Second / 60)
+	var (
+		win             = makeGLWindow()
+		fps             = time.Tick(time.Second / 60)
+		frames          = 0
+		framesPerSecond = 0
+		second          = time.Tick(time.Second)
+		last            = time.Now()
+		lastGamepadScan = time.Now()
 
-	world := game.NewWorld()
-	gamepad := game.NewGamepad(win)
+		world   = game.NewWorld()
+		gamepad = game.NewGamepad(win)
 
-	last := time.Now()
-	lastFPSCheck := time.Now()
-	lastGamepadScan := time.Now()
-	frameCount := 0
-	currentFPS := 0
+		fpsText = text.New(
+			pixel.V(0, 0),
+			text.NewAtlas(
+				ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
+			),
+		)
 
-	fpsText := text.New(
-		pixel.V(0, 0),
-		text.NewAtlas(
-			ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
-		),
+		gamepadText = text.New(
+			pixel.V(0, 0),
+			text.NewAtlas(
+				ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
+			),
+		)
 	)
 
-	gamepadText := text.New(
-		pixel.V(0, 0),
-		text.NewAtlas(
-			ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
-		),
-	)
 	for !win.Closed() {
 		if win.JustReleased(pixelgl.KeyEscape) {
 			win.Destroy()
@@ -83,13 +85,6 @@ func run() {
 		world.Draw(win)
 
 		if debugMode {
-			frameCount++
-			if time.Since(lastFPSCheck).Seconds() >= 1 {
-				currentFPS = frameCount
-				frameCount = 0
-				lastFPSCheck = time.Now()
-			}
-
 			win.SetMatrix(pixel.IM)
 			fpsText.Draw(
 				win,
@@ -98,7 +93,7 @@ func run() {
 				).Moved(pixel.V(20, (win.Bounds().H()-(fpsText.LineHeight*DEBUG_TEXT_SCALE))-10)),
 			)
 			fpsText.Clear()
-			_, err := fpsText.WriteString(strconv.Itoa(currentFPS))
+			_, err := fpsText.WriteString(strconv.Itoa(framesPerSecond))
 			if err != nil {
 				panic(err)
 			}
@@ -115,6 +110,14 @@ func run() {
 
 		win.Update()
 		<-fps
+
+		frames++
+		select {
+		case <-second:
+			framesPerSecond = frames
+			frames = 0
+		default:
+		}
 	}
 }
 
