@@ -26,6 +26,8 @@ const (
 
 var debugMode = false
 var fullscreen = false
+var worldUpdateDuration time.Duration
+var worldDrawDuration time.Duration
 
 func run() {
 	var (
@@ -81,8 +83,14 @@ func run() {
 		}
 
 		win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
+
+		beforeWorldUpdateTime := time.Now()
 		world.Update(gamepad, deltaTime)
+		worldUpdateDuration = time.Since(beforeWorldUpdateTime)
+
+		beforeWorldDrawTime := time.Now()
 		world.Draw(win)
+		worldDrawDuration = time.Since(beforeWorldDrawTime)
 
 		if debugMode {
 			win.SetMatrix(pixel.IM)
