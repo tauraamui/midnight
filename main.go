@@ -56,7 +56,7 @@ func run() {
 			),
 		)
 
-		timeGraph = game.NewGraph(win, worldDrawDuration, worldUpdateDuration)
+		timeGraph = game.NewGraph(win)
 	)
 
 	for !win.Closed() {
@@ -124,10 +124,23 @@ func run() {
 		<-fps
 
 		frames++
+
+		if frames < len(timeGraph.TimesPerFrame) {
+			timeGraph.TimesPerFrame[frames] = game.TimeSpent{
+				DrawTime:   worldDrawDuration,
+				UpdateTime: worldUpdateDuration,
+			}
+		} else {
+			timeGraph.TimesPerFrame = append(timeGraph.TimesPerFrame, game.TimeSpent{
+				DrawTime:   worldDrawDuration,
+				UpdateTime: worldUpdateDuration,
+			})
+		}
 		select {
 		case <-second:
 			framesPerSecond = frames
 			frames = 0
+			timeGraph.TimesPerFrame = []game.TimeSpent{}
 		default:
 		}
 	}
