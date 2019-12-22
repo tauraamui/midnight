@@ -139,7 +139,7 @@ func run() {
 		}
 		select {
 		case <-second:
-			framesPerSecond = frames
+			framesPerSecond = frames + 1
 			frames = 0
 		default:
 			frames++
