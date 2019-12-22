@@ -26,8 +26,8 @@ const (
 
 var debugMode = false
 var fullscreen = false
-var worldUpdateDuration time.Duration
-var worldDrawDuration time.Duration
+var worldUpdateDuration time.Duration = time.Second
+var worldDrawDuration time.Duration = time.Second
 
 func run() {
 	var (
@@ -55,6 +55,8 @@ func run() {
 				ttfFromBytesMust(goregular.TTF, game.SCALE*8), text.ASCII, text.RangeTable(unicode.Latin),
 			),
 		)
+
+		timeGraph = game.NewGraph(win, worldDrawDuration, worldUpdateDuration)
 	)
 
 	for !win.Closed() {
@@ -114,6 +116,8 @@ func run() {
 			gamepadText.Draw(win, pixel.IM.Scaled(
 				pixel.ZV, DEBUG_TEXT_SCALE,
 			).Moved(pixel.V(15, 10*DEBUG_TEXT_SCALE)))
+
+			timeGraph.Draw(win)
 		}
 
 		win.Update()
