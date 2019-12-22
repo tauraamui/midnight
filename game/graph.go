@@ -17,6 +17,7 @@ type TimeSpent struct {
 type Graph struct {
 	imd         *imdraw.IMDraw
 	initialWinW float64
+	barWidth    float64
 	w, h        float64
 
 	TimesPerFrame []TimeSpent
@@ -24,16 +25,20 @@ type Graph struct {
 
 func NewGraph(win *pixelgl.Window) *Graph {
 	return &Graph{
-		imd:           imdraw.New(win),
-		initialWinW:   win.Bounds().W(),
-		w:             win.Bounds().W() * 0.30,
-		h:             100,
+		imd:         imdraw.New(win),
+		initialWinW: win.Bounds().W(),
+		barWidth:    (win.Bounds().W() * 0.30) / 60,
+		w:           win.Bounds().W() * 0.30,
+		h:           100,
+
 		TimesPerFrame: []TimeSpent{},
 	}
 }
 
 func (g *Graph) Draw(win *pixelgl.Window) {
 	if win.Bounds().W() != g.initialWinW {
+		println(len(g.TimesPerFrame))
+		g.barWidth = (win.Bounds().W() * 0.30) / float64(len(g.TimesPerFrame)+1)
 		g.w = win.Bounds().W() * 0.30
 		g.initialWinW = win.Bounds().W()
 	}
@@ -49,13 +54,9 @@ func (g *Graph) Draw(win *pixelgl.Window) {
 		if i > 0 {
 			x = float64(i)
 		}
-		g.imd.Push(pixel.V(float64(5*x), g.h))
-		g.imd.Push(pixel.V(float64(5*x), g.h-float64(ts.DrawTime.Microseconds()*10)))
-		g.imd.Line(5)
-
-		// g.imd.Push(pixel.V(float64(5*x), g.h))
-		// g.imd.Push(pixel.V(float64(5*x), g.h-float64(ts.DrawTime.Microseconds()*10)))
-		// g.imd.Line(5)
+		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), g.h))
+		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), g.h-float64(ts.DrawTime.Microseconds())))
+		g.imd.Line(g.barWidth)
 	}
 	g.imd.Draw(win)
 }
