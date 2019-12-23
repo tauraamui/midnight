@@ -49,13 +49,23 @@ func (g *Graph) Draw(win *pixelgl.Window) {
 	g.imd.Push(pixel.V(g.w, g.h))
 	g.imd.Rectangle(0)
 	g.imd.Color = colornames.Red
+
 	for i, ts := range g.TimesPerFrame {
 		var x float64 = 0
 		if i > 0 {
 			x = float64(i)
 		}
+
+		updateTimeBarHeight := g.h - float64(ts.UpdateTime.Microseconds())
+
+		g.imd.Color = colornames.Blue
 		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), g.h))
-		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), g.h-float64(ts.DrawTime.Microseconds())))
+		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight))
+		g.imd.Line(g.barWidth)
+
+		g.imd.Color = colornames.Cyan
+		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight))
+		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight-float64(ts.DrawTime.Microseconds())))
 		g.imd.Line(g.barWidth)
 	}
 	g.imd.Draw(win)
