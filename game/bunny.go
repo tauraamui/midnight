@@ -59,6 +59,10 @@ func (b *Bunny) Draw(
 		b.sinceAnimFrameSwitch = time.Now()
 	}
 
+	if animSpeed == 0 {
+		b.currentAnimFrameIndex = 0
+	}
+
 	b.animSprites[b.currentAnimFrameIndex].Draw(win, pixel.IM.Scaled(pixel.ZV, SCALE).Moved(win.Bounds().Center()))
 }
 

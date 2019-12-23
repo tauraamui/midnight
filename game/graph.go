@@ -37,7 +37,6 @@ func NewGraph(win *pixelgl.Window) *Graph {
 
 func (g *Graph) Draw(win *pixelgl.Window) {
 	if win.Bounds().W() != g.initialWinW {
-		println(len(g.TimesPerFrame))
 		// adding seemingly pointless 1 to the division in case list is ever 0
 		// otherwise the whole program would come crashing down around our bun ears
 		g.barWidth = (win.Bounds().W() * 0.30) / float64(len(g.TimesPerFrame)+1)
