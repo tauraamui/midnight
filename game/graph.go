@@ -64,10 +64,10 @@ func (g *Graph) Draw(win *pixelgl.Window) {
 		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight))
 		g.imd.Line(g.barWidth)
 
-		g.imd.Color = colornames.Cyan
-		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight))
-		g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight-float64(ts.DrawTime.Microseconds())))
-		g.imd.Line(g.barWidth)
+		// g.imd.Color = colornames.Cyan
+		// g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight))
+		// g.imd.Push(pixel.V(float64((g.barWidth/2)+(g.barWidth*x)), updateTimeBarHeight-float64(ts.DrawTime.Microseconds())))
+		// g.imd.Line(g.barWidth)
 	}
 	g.imd.Draw(win)
 }

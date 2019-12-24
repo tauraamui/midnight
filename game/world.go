@@ -1,6 +1,8 @@
 package game
 
 import (
+	"image/color"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/tauraamui/midnight/sprite"
@@ -67,6 +69,7 @@ func (w *World) Update(gp *Gamepad, dt float64) {
 }
 
 func (w *World) Draw(win *pixelgl.Window) {
+	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(w.Camera)
 
