@@ -66,7 +66,7 @@ func (do *debugOverlay) update(win *pixelgl.Window, frames int) {
 	}
 }
 
-func (do *debugOverlay) draw(win *pixelgl.Window, gp *Gamepad, fps int) {
+func (do *debugOverlay) draw(win *pixelgl.Canvas, gp *Gamepad, fps int) {
 	if !do.enabled {
 		return
 	}
@@ -102,11 +102,13 @@ type Instance struct {
 	FPS                   int
 	CurrentFramesInSecond int
 
-	rootWin     *pixelgl.Window
-	worldCanvas *pixelgl.Canvas
-	fullscreen  bool
-	gamepad     *Gamepad
-	world       *World
+	rootWin         *pixelgl.Window
+	worldCanvas     *pixelgl.Canvas
+	debugCanvas     *pixelgl.Canvas
+	compositeCanvas *pixelgl.Canvas
+	fullscreen      bool
+	gamepad         *Gamepad
+	world           *World
 
 	debugOverlay    *debugOverlay
 	lastGamepadScan time.Time
@@ -118,11 +120,13 @@ func NewInstance(win *pixelgl.Window) *Instance {
 		FPS:                   0,
 		CurrentFramesInSecond: 0,
 
-		rootWin:      win,
-		worldCanvas:  pixelgl.NewCanvas(win.Bounds()),
-		gamepad:      NewGamepad(win),
-		world:        NewWorld(),
-		debugOverlay: NewDebugOverlay(win),
+		rootWin:         win,
+		worldCanvas:     pixelgl.NewCanvas(win.Bounds()),
+		debugCanvas:     pixelgl.NewCanvas(win.Bounds()),
+		compositeCanvas: pixelgl.NewCanvas(win.Bounds()),
+		gamepad:         NewGamepad(win),
+		world:           NewWorld(),
+		debugOverlay:    NewDebugOverlay(win),
 
 		fullscreen:      false,
 		lastGamepadScan: time.Now(),
@@ -157,12 +161,21 @@ func (i *Instance) Update() {
 func (i *Instance) Draw() {
 	win := i.rootWin
 	beforeFinishedDraw := time.Now()
-	i.rootWin.Clear(colornames.Black)
+
+	win.Clear(colornames.Black)
+
 	i.worldCanvas.Clear(colornames.Lightgray)
+	i.debugCanvas.Clear(colornames.Lightgray)
+	i.compositeCanvas.Clear(colornames.Lightgray)
+
 	i.world.Draw(i.worldCanvas)
-	i.worldCanvas.Draw(i.rootWin, pixel.IM.Moved(win.Bounds().Center()))
+	i.worldCanvas.Draw(i.debugCanvas, pixel.IM.Moved(win.Bounds().Center()))
 	i.debugOverlay.drawTimeDuration = time.Since(beforeFinishedDraw)
-	i.debugOverlay.draw(win, i.gamepad, i.FPS)
+
+	i.debugOverlay.draw(i.debugCanvas, i.gamepad, i.FPS)
+	i.debugCanvas.Draw(i.compositeCanvas, pixel.IM.Moved(win.Bounds().Center()))
+
+	i.compositeCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
 	i.rootWin.Update()
 }
@@ -181,7 +194,12 @@ func (i *Instance) attachToGamepad() {
 }
 
 func (i *Instance) toggleFullscreen() {
-	defer func() { i.rootWin.Update(); i.worldCanvas.SetBounds(i.rootWin.Canvas().Bounds()) }()
+	defer func() {
+		i.rootWin.Update()
+		i.worldCanvas.SetBounds(i.rootWin.Canvas().Bounds())
+		i.debugCanvas.SetBounds(i.rootWin.Canvas().Bounds())
+		i.compositeCanvas.SetBounds(i.rootWin.Canvas().Bounds())
+	}()
 	i.fullscreen = !i.fullscreen
 	var mon *pixelgl.Monitor = nil
 	if i.fullscreen {
