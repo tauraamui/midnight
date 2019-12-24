@@ -30,7 +30,7 @@ func NewBunny() *Bunny {
 }
 
 func (b *Bunny) Draw(
-	win *pixelgl.Window,
+	win *pixelgl.Canvas,
 	animSpeed float64,
 	movingL, movingR, movingU, movingD bool,
 ) {

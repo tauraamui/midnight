@@ -68,7 +68,7 @@ func (w *World) Update(gp *Gamepad, dt float64) {
 	}
 }
 
-func (w *World) Draw(win *pixelgl.Window) {
+func (w *World) Draw(win *pixelgl.Canvas) {
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(w.Camera)
