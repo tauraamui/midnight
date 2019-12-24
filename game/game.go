@@ -153,11 +153,11 @@ func (i *Instance) Update() {
 }
 
 func (i *Instance) Draw() {
-	beforeFinishedDraw := time.Now()
-	defer func() { i.debugOverlay.drawTimeDuration = time.Since(beforeFinishedDraw) }()
 	win := i.rootWin
+	beforeFinishedDraw := time.Now()
 	win.Clear(colornames.Lightgray)
 	i.world.Draw(win)
+	i.debugOverlay.drawTimeDuration = time.Since(beforeFinishedDraw)
 	i.debugOverlay.draw(win, i.gamepad, i.FPS)
 
 	i.rootWin.Update()
