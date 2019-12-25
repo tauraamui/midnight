@@ -35,7 +35,7 @@ func NewGraph(win *pixelgl.Window) *Graph {
 	}
 }
 
-func (g *Graph) Draw(win *pixelgl.Window) {
+func (g *Graph) Draw(win *pixelgl.Canvas) {
 	if win.Bounds().W() != g.initialWinW {
 		// adding seemingly pointless 1 to the division in case list is ever 0
 		// otherwise the whole program would come crashing down around our bun ears
