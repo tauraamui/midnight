@@ -76,6 +76,39 @@ func (gp *Gamepad) Update() bool {
 	return false
 }
 
+func (gp *Gamepad) GetPressedButtons() []int {
+	pressedButtons := []int{}
+	jsAttached := gp.Update()
+	if jsAttached {
+		for b := 0; b < gp.joystick.win.JoystickButtonCount(*gp.joystick.input); b++ {
+			if gp.joystick.win.JoystickPressed(*gp.joystick.input, b) {
+				pressedButtons = append(pressedButtons, b)
+			}
+		}
+	}
+	return pressedButtons
+}
+
+func (gp *Gamepad) LeftJoystickPressed() bool {
+	pressedButtons := gp.GetPressedButtons()
+	for _, b := range pressedButtons {
+		if b == 13 {
+			return true
+		}
+	}
+	return false
+}
+
+func (gp *Gamepad) RightJoystickPressed() bool {
+	pressedButtons := gp.GetPressedButtons()
+	for _, b := range pressedButtons {
+		if b == 14 {
+			return true
+		}
+	}
+	return false
+}
+
 func (gp *Gamepad) MovingUp() (float64, bool) {
 	jsAttached := gp.Update()
 	if jsAttached {

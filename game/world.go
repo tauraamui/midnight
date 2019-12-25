@@ -40,30 +40,34 @@ func NewWorld() *World {
 }
 
 func (w *World) Update(gp *Gamepad, dt float64) {
+	speedMultiplier := 1.0
+	if gp.LeftJoystickPressed() {
+		speedMultiplier = 2.5
+	}
 	w.currentVelocity = 0
 	w.movingL, w.movingR, w.movingU, w.movingD = false, false, false, false
 
 	if speed, movingL := gp.MovingLeft(); movingL {
 		w.movingL = movingL
-		w.currentVelocity = (CAM_SPEED * speed) * dt
+		w.currentVelocity = (CAM_SPEED * speed * speedMultiplier) * dt
 		w.camPos.X -= w.currentVelocity
 	}
 
 	if speed, movingR := gp.MovingRight(); movingR {
 		w.movingR = movingR
-		w.currentVelocity = (CAM_SPEED * speed) * dt
+		w.currentVelocity = (CAM_SPEED * speed * speedMultiplier) * dt
 		w.camPos.X += w.currentVelocity
 	}
 
 	if speed, movingU := gp.MovingUp(); movingU {
 		w.movingU = movingU
-		w.currentVelocity = (CAM_SPEED * speed) * dt
+		w.currentVelocity = (CAM_SPEED * speed * speedMultiplier) * dt
 		w.camPos.Y += w.currentVelocity
 	}
 
 	if speed, movingD := gp.MovingDown(); movingD {
 		w.movingD = movingD
-		w.currentVelocity = (CAM_SPEED * speed) * dt
+		w.currentVelocity = (CAM_SPEED * speed * speedMultiplier) * dt
 		w.camPos.Y -= w.currentVelocity
 	}
 }
