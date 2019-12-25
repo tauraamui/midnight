@@ -102,13 +102,13 @@ type Instance struct {
 	FPS                   int
 	CurrentFramesInSecond int
 
-	rootWin         *pixelgl.Window
-	worldCanvas     *pixelgl.Canvas
-	debugCanvas     *pixelgl.Canvas
-	compositeCanvas *pixelgl.Canvas
-	fullscreen      bool
-	gamepad         *Gamepad
-	world           *World
+	rootWin      *pixelgl.Window
+	worldCanvas  *pixelgl.Canvas
+	debugCanvas  *pixelgl.Canvas
+	shaderCanvas *pixelgl.Canvas
+	fullscreen   bool
+	gamepad      *Gamepad
+	world        *World
 
 	debugOverlay    *debugOverlay
 	lastGamepadScan time.Time
@@ -120,18 +120,22 @@ func NewInstance(win *pixelgl.Window) *Instance {
 		FPS:                   0,
 		CurrentFramesInSecond: 0,
 
-		rootWin:         win,
-		worldCanvas:     pixelgl.NewCanvas(win.Bounds()),
-		debugCanvas:     pixelgl.NewCanvas(win.Bounds()),
-		compositeCanvas: pixelgl.NewCanvas(win.Bounds()),
-		gamepad:         NewGamepad(win),
-		world:           NewWorld(),
-		debugOverlay:    NewDebugOverlay(win),
+		rootWin:      win,
+		worldCanvas:  pixelgl.NewCanvas(win.Bounds()),
+		debugCanvas:  pixelgl.NewCanvas(win.Bounds()),
+		shaderCanvas: pixelgl.NewCanvas(win.Bounds()),
+		gamepad:      NewGamepad(win),
+		world:        NewWorld(),
+		debugOverlay: NewDebugOverlay(win),
 
 		fullscreen:      false,
 		lastGamepadScan: time.Now(),
 		lastDelta:       time.Now(),
 	}
+}
+
+func (i *Instance) SetShader(shader string) {
+	i.shaderCanvas.SetFragmentShader(shader)
 }
 
 func (i *Instance) Update() {
@@ -166,16 +170,20 @@ func (i *Instance) Draw() {
 
 	i.worldCanvas.Clear(colornames.Lightgray)
 	i.debugCanvas.Clear(colornames.Lightgray)
-	i.compositeCanvas.Clear(colornames.Lightgray)
+	i.shaderCanvas.Clear(colornames.Lightgray)
 
+	// render world onto own canvas
 	i.world.Draw(i.worldCanvas)
-	i.worldCanvas.Draw(i.debugCanvas, pixel.IM.Moved(win.Bounds().Center()))
+	// paint world canvas onto shader canvas to apply current shader
+	i.worldCanvas.Draw(i.shaderCanvas, pixel.IM.Moved(win.Bounds().Center()))
 	i.debugOverlay.drawTimeDuration = time.Since(beforeFinishedDraw)
 
+	// paint finished shader canvas onto debug canvas
+	i.shaderCanvas.Draw(i.debugCanvas, pixel.IM.Moved(win.Bounds().Center()))
+	// draw debug elements above everything else
 	i.debugOverlay.draw(i.debugCanvas, i.gamepad, i.FPS)
-	i.debugCanvas.Draw(i.compositeCanvas, pixel.IM.Moved(win.Bounds().Center()))
-
-	i.compositeCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+	// draw finished debug canvas onto window
+	i.debugCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
 	i.rootWin.Update()
 }
@@ -198,7 +206,7 @@ func (i *Instance) toggleFullscreen() {
 		i.rootWin.Update()
 		i.worldCanvas.SetBounds(i.rootWin.Canvas().Bounds())
 		i.debugCanvas.SetBounds(i.rootWin.Canvas().Bounds())
-		i.compositeCanvas.SetBounds(i.rootWin.Canvas().Bounds())
+		i.shaderCanvas.SetBounds(i.rootWin.Canvas().Bounds())
 	}()
 	i.fullscreen = !i.fullscreen
 	var mon *pixelgl.Monitor = nil
