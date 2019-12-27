@@ -23,6 +23,7 @@ type debugOverlay struct {
 	perfGraph           *Graph
 	fpsText             *text.Text
 	gamepadAxisListText *text.Text
+	worldClockText      *text.Text
 
 	enabled            bool
 	drawTimeDuration   time.Duration
@@ -37,6 +38,7 @@ func NewDebugOverlay(win *pixelgl.Window) *debugOverlay {
 		enabled:             false,
 		fpsText:             text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 		gamepadAxisListText: text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
+		worldClockText:      text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 	}
 }
 
@@ -66,7 +68,7 @@ func (do *debugOverlay) update(win *pixelgl.Window, frames int) {
 	}
 }
 
-func (do *debugOverlay) draw(win *pixelgl.Canvas, gp *Gamepad, fps int) {
+func (do *debugOverlay) draw(win *pixelgl.Canvas, gp *Gamepad, c *WorldClock, fps int) {
 	if !do.enabled {
 		return
 	}
@@ -96,6 +98,14 @@ func (do *debugOverlay) draw(win *pixelgl.Canvas, gp *Gamepad, fps int) {
 		pixel.ZV, DEBUG_TEXT_SCALE,
 	).Moved(pixel.V(15, 10*DEBUG_TEXT_SCALE)))
 
+	do.worldClockText.Clear()
+	_, err = do.worldClockText.WriteString(c.Current.String())
+	if err != nil {
+		panic(err)
+	}
+	do.worldClockText.Draw(win, pixel.IM.Scaled(
+		pixel.ZV, 1.2,
+	).Moved(pixel.V(win.Bounds().W()-200, 10*1.2)))
 }
 
 type Instance struct {
@@ -187,7 +197,7 @@ func (i *Instance) Draw() {
 	// paint finished shader canvas onto debug canvas
 	i.shaderCanvas.Draw(i.debugCanvas, pixel.IM.Moved(win.Bounds().Center()))
 	// draw debug elements above everything else
-	i.debugOverlay.draw(i.debugCanvas, i.gamepad, i.FPS)
+	i.debugOverlay.draw(i.debugCanvas, i.gamepad, i.world.Clock, i.FPS)
 	// draw finished debug canvas onto window
 	i.debugCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 

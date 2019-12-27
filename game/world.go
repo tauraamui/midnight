@@ -19,6 +19,7 @@ const (
 type World struct {
 	Camera pixel.Matrix
 	Bunny  *Bunny
+	Clock  *WorldClock
 
 	camPos                             pixel.Vec
 	spriteSheet                        pixel.Picture
@@ -33,8 +34,9 @@ func NewWorld() *World {
 	world := World{
 		Camera:        pixel.IM,
 		Bunny:         NewBunny(),
+		Clock:         NewWorldClock(),
 		camPos:        pixel.ZV,
-		currentShader: NewPassthroughShader(),
+		currentShader: NewNightTimeShader(),
 	}
 	world.loadSprites()
 
@@ -71,6 +73,11 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 		w.movingD = movingD
 		w.currentVelocity = (CAM_SPEED * speed * speedMultiplier) * dt
 		w.camPos.Y -= w.currentVelocity
+	}
+
+	w.Clock.Update()
+	if w.Clock.IsDaylight() {
+		w.currentShader = NewPassthroughShader()
 	}
 
 	return w.currentShader
