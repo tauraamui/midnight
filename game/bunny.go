@@ -67,7 +67,7 @@ func (b *Bunny) Draw(
 }
 
 func (b *Bunny) loadSprites() {
-	s, err := sprite.LoadSpritesheet("./assets/bunnysheet5.png")
+	s, err := sprite.LoadSpritesheet("./assets/img/bunnysheet5.png")
 	if err != nil {
 		panic(err)
 	}
