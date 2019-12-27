@@ -19,7 +19,6 @@ func run() {
 	fps := time.Tick(time.Second / 60)
 	second := time.Tick(time.Second)
 	game := game.NewInstance(makeGLWindow())
-	game.SetShader(fragmentShader)
 	for !game.Quitted() {
 		game.Update()
 		game.Draw()
@@ -50,23 +49,3 @@ func makeGLWindow() *pixelgl.Window {
 func main() {
 	pixelgl.Run(run)
 }
-
-var fragmentShader = `
-#version 330 core
-
-in vec2  vTexCoords;
-
-out vec4 fragColor;
-
-uniform vec4 uTexBounds;
-uniform sampler2D uTexture;
-
-float ambientStrength = 0.225f;
-vec3 lightColor = vec3(1.0, 1.0, 1.0);
-
-void main() {
-	// Get our current screen coordinate
-	vec2 t = (vTexCoords - uTexBounds.xy) / uTexBounds.zw;
-	fragColor = vec4(((ambientStrength * lightColor) * texture(uTexture, t).rgb), 1.0);
-}
-`

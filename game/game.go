@@ -106,6 +106,7 @@ type Instance struct {
 	worldCanvas  *pixelgl.Canvas
 	debugCanvas  *pixelgl.Canvas
 	shaderCanvas *pixelgl.Canvas
+	lastShader   Shader
 	fullscreen   bool
 	gamepad      *Gamepad
 	world        *World
@@ -134,10 +135,6 @@ func NewInstance(win *pixelgl.Window) *Instance {
 	}
 }
 
-func (i *Instance) SetShader(shader string) {
-	i.shaderCanvas.SetFragmentShader(shader)
-}
-
 func (i *Instance) Update() {
 	beforeFinishedUpdate := time.Now()
 	defer func() { i.debugOverlay.updateTimeDuration = time.Since(beforeFinishedUpdate) }()
@@ -159,7 +156,16 @@ func (i *Instance) Update() {
 		i.toggleFullscreen()
 	}
 
-	i.world.Update(i.gamepad, deltaTime)
+	shader := i.world.Update(i.gamepad, deltaTime)
+	if i.lastShader != shader {
+		shaderSrc, err := shader.Code()
+		if err != nil {
+			panic(err)
+		}
+
+		i.shaderCanvas.SetFragmentShader(shaderSrc)
+		i.lastShader = shader
+	}
 }
 
 func (i *Instance) Draw() {

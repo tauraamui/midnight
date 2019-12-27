@@ -21,25 +21,27 @@ type World struct {
 	Bunny  *Bunny
 
 	camPos                             pixel.Vec
-	movingL, movingR, movingU, movingD bool
 	spriteSheet                        pixel.Picture
+	currentShader                      Shader
 	batch                              *pixel.Batch
 	grassTiles                         []*pixel.Sprite
+	movingL, movingR, movingU, movingD bool
 	currentVelocity                    float64
 }
 
 func NewWorld() *World {
 	world := World{
-		Camera: pixel.IM,
-		Bunny:  NewBunny(),
-		camPos: pixel.ZV,
+		Camera:        pixel.IM,
+		Bunny:         NewBunny(),
+		camPos:        pixel.ZV,
+		currentShader: NewPassthroughShader(),
 	}
 	world.loadSprites()
 
 	return &world
 }
 
-func (w *World) Update(gp *Gamepad, dt float64) {
+func (w *World) Update(gp *Gamepad, dt float64) Shader {
 	speedMultiplier := 1.0
 	if gp.LeftJoystickPressed() {
 		speedMultiplier = 2.5
@@ -70,6 +72,8 @@ func (w *World) Update(gp *Gamepad, dt float64) {
 		w.currentVelocity = (CAM_SPEED * speed * speedMultiplier) * dt
 		w.camPos.Y -= w.currentVelocity
 	}
+
+	return w.currentShader
 }
 
 func (w *World) Draw(win *pixelgl.Canvas) {
@@ -89,7 +93,7 @@ func (w *World) Draw(win *pixelgl.Canvas) {
 }
 
 func (w *World) loadSprites() {
-	s, err := sprite.LoadSpritesheet("./assets/terrain.png")
+	s, err := sprite.LoadSpritesheet("./assets/img/terrain.png")
 	if err != nil {
 		panic(err)
 	}
