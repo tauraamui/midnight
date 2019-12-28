@@ -23,6 +23,7 @@ type debugOverlay struct {
 	perfGraph           *Graph
 	fpsText             *text.Text
 	gamepadAxisListText *text.Text
+	perfNumbersText     *text.Text
 	worldClockText      *text.Text
 
 	enabled            bool
@@ -38,6 +39,7 @@ func NewDebugOverlay(win *pixelgl.Window) *debugOverlay {
 		enabled:             false,
 		fpsText:             text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 		gamepadAxisListText: text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
+		perfNumbersText:     text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 		worldClockText:      text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 	}
 }

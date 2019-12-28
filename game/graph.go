@@ -1,12 +1,16 @@
 package game
 
 import (
+	"fmt"
 	"time"
+	"unicode"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/font/gofont/goregular"
 )
 
 type TimeSpent struct {
@@ -15,23 +19,28 @@ type TimeSpent struct {
 }
 
 type Graph struct {
-	imd         *imdraw.IMDraw
-	initialWinW float64
-	barWidth    float64
-	w, h        float64
-
 	TimesPerFrame []TimeSpent
+
+	perfTimeSpentText *text.Text
+	avgUpdateTime     int64
+	avgDrawTime       int64
+	imd               *imdraw.IMDraw
+	initialWinW       float64
+	barWidth          float64
+	w, h              float64
 }
 
 func NewGraph(win *pixelgl.Window) *Graph {
+	ttf := ttfFromBytesMust(goregular.TTF, SCALE*8)
 	return &Graph{
-		imd:         imdraw.New(win),
-		initialWinW: win.Bounds().W(),
-		barWidth:    (win.Bounds().W() * 0.30) / 60,
-		w:           win.Bounds().W() * 0.30,
-		h:           100,
-
 		TimesPerFrame: []TimeSpent{},
+
+		perfTimeSpentText: text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
+		imd:               imdraw.New(win),
+		initialWinW:       win.Bounds().W(),
+		barWidth:          (win.Bounds().W() * 0.45) / 60,
+		w:                 win.Bounds().W() * 0.45,
+		h:                 150,
 	}
 }
 
@@ -49,12 +58,20 @@ func (g *Graph) Draw(win *pixelgl.Canvas) {
 	g.imd.Push(pixel.ZV)
 	g.imd.Push(pixel.V(g.w, g.h))
 	g.imd.Rectangle(0)
-	g.imd.Color = colornames.Red
 
+	var updateTimeCount int64 = 0
+	var drawTimeCount int64 = 0
 	for i, ts := range g.TimesPerFrame {
 		var x float64 = 0
 		if i > 0 {
 			x = float64(i)
+			updateTimeCount += ts.UpdateTime.Microseconds()
+			drawTimeCount += ts.DrawTime.Microseconds()
+		}
+
+		if i+1 == len(g.TimesPerFrame) {
+			g.avgUpdateTime = updateTimeCount / int64(len(g.TimesPerFrame))
+			g.avgDrawTime = drawTimeCount / int64(len(g.TimesPerFrame))
 		}
 
 		updateTimeBarHeight := g.h - float64(ts.UpdateTime.Microseconds())
@@ -70,4 +87,12 @@ func (g *Graph) Draw(win *pixelgl.Canvas) {
 		g.imd.Line(g.barWidth)
 	}
 	g.imd.Draw(win)
+
+	defer func() { win.SetMatrix(pixel.IM) }()
+	win.SetMatrix(pixel.IM.Moved(pixel.V(win.Bounds().W()-g.w, win.Bounds().H()-g.h)))
+	g.perfTimeSpentText.Clear()
+	g.perfTimeSpentText.WriteString(fmt.Sprintf("AVG UPDATE+DRAW TIME: %d | %d", g.avgUpdateTime, g.avgDrawTime))
+	g.perfTimeSpentText.Draw(win, pixel.IM.Scaled(
+		pixel.ZV, 1.02,
+	).Moved(pixel.ZV))
 }
