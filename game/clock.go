@@ -2,6 +2,8 @@ package game
 
 import "time"
 
+const INTENSITY_PER_HOUR = .142857143
+
 type WorldClock struct {
 	Current time.Time
 
@@ -15,10 +17,10 @@ func NewWorldClock() *WorldClock {
 }
 
 func (w *WorldClock) Update() {
-	if time.Since(w.timeLastUpdate).Minutes() > 1 {
-		w.Current = w.Current.Add(time.Minute * 10)
-		w.timeLastUpdate = time.Now()
-	}
+	// if time.Since(w.timeLastUpdate).Minutes() > 1 {
+	w.Current = w.Current.Add(time.Second * 10)
+	w.timeLastUpdate = time.Now()
+	// }
 }
 
 func (w *WorldClock) IsDaylight() bool {
