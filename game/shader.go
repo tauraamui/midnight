@@ -45,18 +45,31 @@ func (s *PassthroughShader) Code() (string, error) { return s.src, nil }
 
 func (s *PassthroughShader) Dirty() bool { return false }
 
-type NightTimeShader struct {
-	srcPath string
-	src     string
+type DayAndNightTimeShader struct {
+	ambientLightIntensity *float32
+	srcPath               string
+	src                   string
+	dirty                 bool
 }
 
-func NewNightTimeShader() *NightTimeShader {
-	return &NightTimeShader{
-		srcPath: "./assets/shader/nighttime.glsl",
+func NewDayAndNightTimeShader() *DayAndNightTimeShader {
+	shader := DayAndNightTimeShader{
+		ambientLightIntensity: new(float32),
+		srcPath:               "./assets/shader/nighttime.glsl",
+		dirty:                 true,
 	}
+	*shader.ambientLightIntensity = INTENSITY_PER_HOUR
+	return &shader
 }
 
-func (s *NightTimeShader) Code() (string, error) {
+func (s *DayAndNightTimeShader) SetAmbientLightIntensity(ali float32) {
+	*s.ambientLightIntensity = ali
+	s.dirty = true
+}
+
+func (s *DayAndNightTimeShader) AmbientLightIntensity() *float32 { return s.ambientLightIntensity }
+
+func (s *DayAndNightTimeShader) Code() (string, error) {
 	if len(s.src) > 0 {
 		return s.src, nil
 	}
@@ -77,6 +90,8 @@ func (s *NightTimeShader) Code() (string, error) {
 	return s.src, nil
 }
 
-func (s *NightTimeShader) Dirty() bool {
-	return false
+func (s *DayAndNightTimeShader) Dirty() bool {
+	wasDirty := s.dirty
+	s.dirty = false
+	return wasDirty
 }

@@ -36,7 +36,7 @@ func NewWorld() *World {
 		Bunny:         NewBunny(),
 		Clock:         NewWorldClock(),
 		camPos:        pixel.ZV,
-		currentShader: NewNightTimeShader(),
+		currentShader: NewDayAndNightTimeShader(),
 	}
 	world.loadSprites()
 
@@ -76,8 +76,10 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 	}
 
 	w.Clock.Update()
-	if w.Clock.IsDaylight() {
-		w.currentShader = NewPassthroughShader()
+
+	if shader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
+		shader.SetAmbientLightIntensity(float32(w.Clock.Current.Hour()) * INTENSITY_PER_HOUR)
+		return shader
 	}
 
 	return w.currentShader

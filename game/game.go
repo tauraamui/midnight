@@ -170,6 +170,9 @@ func (i *Instance) Update() {
 
 	shader := i.world.Update(i.gamepad, deltaTime)
 	if i.lastShader != shader {
+		if dayNightShader, ok := shader.(*DayAndNightTimeShader); ok {
+			i.shaderCanvas.SetUniform("ambientLightIntensity", dayNightShader.AmbientLightIntensity())
+		}
 		shaderSrc, err := shader.Code()
 		if err != nil {
 			panic(err)

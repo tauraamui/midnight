@@ -88,11 +88,12 @@ func (g *Graph) Draw(win *pixelgl.Canvas) {
 	}
 	g.imd.Draw(win)
 
-	defer func() { win.SetMatrix(pixel.IM) }()
 	win.SetMatrix(pixel.IM.Moved(pixel.V(win.Bounds().W()-g.w, win.Bounds().H()-g.h)))
 	g.perfTimeSpentText.Clear()
 	g.perfTimeSpentText.WriteString(fmt.Sprintf("AVG UPDATE+DRAW TIME: %d | %d", g.avgUpdateTime, g.avgDrawTime))
 	g.perfTimeSpentText.Draw(win, pixel.IM.Scaled(
 		pixel.ZV, 1.02,
 	).Moved(pixel.ZV))
+
+	win.SetMatrix(pixel.IM)
 }
