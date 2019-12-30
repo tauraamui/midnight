@@ -2,7 +2,8 @@ package game
 
 import "time"
 
-const INTENSITY_PER_MINUTE = .002380952
+const INTENSITY_PER_MINUTE = .005555556
+const MINIMUM_LIGHT_INTENSITY float32 = .11111112
 
 type WorldClock struct {
 	Current time.Time
