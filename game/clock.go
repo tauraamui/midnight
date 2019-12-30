@@ -2,7 +2,7 @@ package game
 
 import "time"
 
-const INTENSITY_PER_HOUR = .142857143
+const INTENSITY_PER_MINUTE = .002380952
 
 type WorldClock struct {
 	Current time.Time
@@ -17,6 +17,9 @@ func NewWorldClock() *WorldClock {
 }
 
 func (w *WorldClock) Update() {
+	if w.Current.Hour() == 0 {
+		w.Current = w.Current.Add(time.Hour * 1)
+	}
 	// if time.Since(w.timeLastUpdate).Minutes() > 1 {
 	w.Current = w.Current.Add(time.Second * 10)
 	w.timeLastUpdate = time.Now()

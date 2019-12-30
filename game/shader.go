@@ -58,7 +58,7 @@ func NewDayAndNightTimeShader() *DayAndNightTimeShader {
 		srcPath:               "./assets/shader/nighttime.glsl",
 		dirty:                 true,
 	}
-	*shader.ambientLightIntensity = INTENSITY_PER_HOUR
+	*shader.ambientLightIntensity = INTENSITY_PER_MINUTE
 	return &shader
 }
 
