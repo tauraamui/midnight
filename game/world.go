@@ -78,18 +78,22 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 	w.Clock.Update()
 
 	if shader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
-		// var lightIntensity float32 = 1
-		// if w.Clock.Current.Hour() < 7 {
-		// 	lightIntensity = (float32(w.Clock.Current.Hour()) * 60) + float32(w.Clock.Current.Minute())
-		// 	shader.SetAmbientLightIntensity(lightIntensity * INTENSITY_PER_MINUTE)
-		// 	return shader
-		// }
 		var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
+		defer func() { shader.SetAmbientLightIntensity(lightIntensity) }()
 		if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 19 {
 			lightIntensity = 1
+			return shader
 		}
 
-		shader.SetAmbientLightIntensity(lightIntensity)
+		currentHour := w.Clock.Current.Hour()
+		if currentHour > 4 && currentHour < 8 {
+			seconds := w.Clock.Current.Hour()*60 + w.Clock.Current.Minute() - 300
+			if seconds == 0 {
+				seconds = 1
+			}
+			lightIntensity = (float32(.049999996) * float32(seconds)) * float32(.11111112)
+		}
+
 		return shader
 	}
 
