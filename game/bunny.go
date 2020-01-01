@@ -5,6 +5,7 @@ import (
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/markbates/pkger"
 	"github.com/tauraamui/midnight/sprite"
 )
 
@@ -67,7 +68,12 @@ func (b *Bunny) Draw(
 }
 
 func (b *Bunny) loadSprites() {
-	s, err := sprite.LoadSpritesheet("./assets/img/bunnysheet5.png")
+	spritesheetFile, err := pkger.Open("/assets/img/bunnysheet5.png")
+	if err != nil {
+		panic(err)
+	}
+
+	s, err := sprite.LoadSpritesheet(spritesheetFile)
 	if err != nil {
 		panic(err)
 	}

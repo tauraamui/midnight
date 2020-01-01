@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"image"
-	"os"
 
 	"github.com/faiface/pixel"
+	"github.com/markbates/pkger/pkging"
 )
 
 func Make(sheet pixel.Picture, x, y, dim int) *pixel.Sprite {
@@ -34,11 +34,7 @@ func Make(sheet pixel.Picture, x, y, dim int) *pixel.Sprite {
 	)
 }
 
-func LoadSpritesheet(path string) (pixel.Picture, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
+func LoadSpritesheet(file pkging.File) (pixel.Picture, error) {
 	defer file.Close()
 	img, _, err := image.Decode(file)
 	if err != nil {
