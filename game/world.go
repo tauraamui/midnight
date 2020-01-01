@@ -80,43 +80,29 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 	if shader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
 		var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
 		defer func() { shader.SetAmbientLightIntensity(lightIntensity) }()
-		if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 19 {
+		if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 17 {
 			lightIntensity = 1
 			return shader
 		}
 
-		// currentHour := w.Clock.Current.Hour()
-		// if (currentHour > 4 && currentHour < 8) || (currentHour > 16 && currentHour < 21) {
-		// 	morning := currentHour > 4 && currentHour < 8
-		// 	evening := currentHour > 16 && currentHour < 21
-
-		// 	seconds := (w.Clock.Current.Hour()*60 + w.Clock.Current.Minute()) + 1
-		// 	if morning {
-		// 		seconds -= 300
-		// 	} else if evening {
-		// 		seconds = 1381 - seconds
-		// 	}
-
-		// 	lightIntensity = (float32(.049999996) * float32(seconds)) * float32(.11111112)
-		// 	if evening {
-		// 		lightIntensity = 1 + (lightIntensity * -1)
-		// 	}
-
-		// 	if lightIntensity < .11111112 {
-		// 		lightIntensity = .11111112
-		// 	}
-
-		// 	fmt.Printf("SECONDS: %d, LIGHT INTENSITY: %f\n", seconds, lightIntensity)
-		// }
-
 		currentHour := w.Clock.Current.Hour()
+		currentMinutes := w.Clock.Current.Minute()
 		if currentHour > 4 && currentHour < 8 {
-			secondsBetween5And8 := (currentHour*60 + w.Clock.Current.Minute() - 300) + 1
-			lightIntensity = (float32(.049999996) * float32(secondsBetween5And8) * float32(.11111112))
+			minutesBetween5And8 := (currentHour*60 + currentMinutes - 300) + 1
+			lightIntensity = (float32(.049999996) * float32(minutesBetween5And8) * float32(.11111112))
 			if lightIntensity < .11111112 {
 				lightIntensity = .11111112
 			}
 			// println("SECONDS:", secondsBetween5And8, "LIGHT INTENSITY:", fmt.Sprintf("%f", lightIntensity))
+			return shader
+		}
+
+		if currentHour > 17 && currentHour < 21 {
+			minutesBetween18And21 := (currentHour*60 + currentMinutes - 1080) + 1
+			lightIntensity = 1 - (float32(.049999996) * float32(minutesBetween18And21) * float32(.11111112))
+			if lightIntensity < .11111112 {
+				lightIntensity = .11111112
+			}
 			return shader
 		}
 
