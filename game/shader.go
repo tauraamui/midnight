@@ -1,8 +1,10 @@
 package game
 
-import "os"
+import (
+	"bytes"
 
-import "bytes"
+	"github.com/markbates/pkger"
+)
 
 type Shader interface {
 	Code() (string, error)
@@ -47,7 +49,6 @@ func (s *PassthroughShader) Dirty() bool { return false }
 
 type DayAndNightTimeShader struct {
 	ambientLightIntensity *float32
-	srcPath               string
 	src                   string
 	dirty                 bool
 }
@@ -55,7 +56,6 @@ type DayAndNightTimeShader struct {
 func NewDayAndNightTimeShader() *DayAndNightTimeShader {
 	shader := DayAndNightTimeShader{
 		ambientLightIntensity: new(float32),
-		srcPath:               "./assets/shader/nighttime.glsl",
 		dirty:                 true,
 	}
 	*shader.ambientLightIntensity = INTENSITY_PER_MINUTE
@@ -74,7 +74,7 @@ func (s *DayAndNightTimeShader) Code() (string, error) {
 		return s.src, nil
 	}
 
-	file, err := os.Open(s.srcPath)
+	file, err := pkger.Open("/assets/shader/nighttime.glsl")
 	if err != nil {
 		return "", err
 	}

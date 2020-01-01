@@ -5,6 +5,7 @@ import (
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/markbates/pkger"
 	"github.com/tauraamui/midnight/sprite"
 )
 
@@ -134,7 +135,12 @@ func (w *World) Draw(win *pixelgl.Canvas) {
 }
 
 func (w *World) loadSprites() {
-	s, err := sprite.LoadSpritesheet("./assets/img/terrain.png")
+	spritesheetFile, err := pkger.Open("/assets/img/terrain.png")
+	if err != nil {
+		panic(err)
+	}
+
+	s, err := sprite.LoadSpritesheet(spritesheetFile)
 	if err != nil {
 		panic(err)
 	}
