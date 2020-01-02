@@ -10,16 +10,17 @@ uniform sampler2D uTexture;
 
 uniform float ambientLightIntensity;
 
-vec3 lightColor = vec3(1.0, 1.0, 1.0);
+vec3 lightColor = vec3(0.9373, 0.7765, 0.502);
 
 void main() {
 	// Get our current screen coordinate
 	vec2 t = (vTexCoords - uTexBounds.xy) / uTexBounds.zw;
-	vec3 color = vec3(((ambientLightIntensity * lightColor) * texture(uTexture, t).rgb));
+
+	vec3 tColor = vec3(texture(uTexture, t).rgb);
 
 	float pct = 0.0;
-	pct = distance(t, vec2(0.11));
-	color = color.rgb * (1 - pct);
+	pct = distance(t, vec2(0.65));
+	tColor = vec3(((1 - pct) * lightColor) * tColor);
 
-	fragColor = vec4(color, 1.0);
+	fragColor = vec4(tColor, 1.0);
 }
