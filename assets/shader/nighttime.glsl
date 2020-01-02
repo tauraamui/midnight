@@ -18,7 +18,7 @@ void main() {
 	vec3 color = vec3(((ambientLightIntensity * lightColor) * texture(uTexture, t).rgb));
 
 	float pct = 0.0;
-	pct = distance(t, vec2(0.5));
+	pct = distance(t, vec2(0.11));
 	color = color.rgb * (1 - pct);
 
 	fragColor = vec4(color, 1.0);
