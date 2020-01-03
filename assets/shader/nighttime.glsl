@@ -16,9 +16,8 @@ vec3 spotLightColor = vec3(0.8431, 0.0588, 0.0588);
 void main() {
 	// Get our current screen coordinate
 	vec2 t = (vTexCoords - uTexBounds.xy) / uTexBounds.zw;
-	vec3 tColor = vec3(texture(uTexture, t).rgb);
+	vec3 tColor = texture(uTexture, t).rgb;
 	float distanceFromLight = 1-(distance(t, vec2(0.85)));
-	vec3 ambColor = (ambientLightIntensity * ambientLightColor) * tColor;
-	ambColor = (ambientLightIntensity + (distanceFromLight * spotLightColor)) * tColor;
+	vec3 ambColor = (ambientLightIntensity + (distanceFromLight * spotLightColor)) * tColor;
 	fragColor = vec4(ambColor, 1.0);
 }
