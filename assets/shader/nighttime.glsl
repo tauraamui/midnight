@@ -10,7 +10,7 @@ uniform sampler2D uTexture;
 
 uniform float ambientLightIntensity;
 
-vec3 ambientLightColor = vec3(1.0);
+vec3 ambientLightColor = vec3(1.0, 1.0, 1.0);
 vec3 spotLightColor = vec3(0.8431, 0.0588, 0.0588);
 
 void main() {
@@ -18,6 +18,10 @@ void main() {
 	vec2 t = (vTexCoords - uTexBounds.xy) / uTexBounds.zw;
 	vec3 tColor = texture(uTexture, t).rgb;
 	float distanceFromLight = 1-(distance(t, vec2(0.85)));
-	vec3 ambColor = (ambientLightIntensity + (distanceFromLight * spotLightColor)) * tColor;
+
+	vec3 ambientLight = (ambientLightIntensity * ambientLightColor);
+	vec3 pointlightLight = (distanceFromLight * spotLightColor);
+
+	vec3 ambColor = (ambientLight + pointlightLight) * tColor;
 	fragColor = vec4(ambColor, 1.0);
 }
