@@ -5,6 +5,7 @@ import (
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/markbates/pkger"
 	"github.com/tauraamui/midnight/sprite"
 )
@@ -79,6 +80,10 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 	w.Clock.Update()
 
 	if shader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
+		newFireflyPos := shader.fireflyPos.Add(mgl32.Vec2{0.0, -0.001})
+		if newFireflyPos.Y() > 0.009 {
+			shader.SetFireflyPos(newFireflyPos)
+		}
 		var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
 		defer func() { shader.SetAmbientLightIntensity(lightIntensity) }()
 		if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 17 {

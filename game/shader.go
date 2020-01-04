@@ -3,6 +3,7 @@ package game
 import (
 	"bytes"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/markbates/pkger"
 )
 
@@ -49,13 +50,16 @@ func (s *PassthroughShader) Dirty() bool { return false }
 
 type DayAndNightTimeShader struct {
 	ambientLightIntensity *float32
+	fireflyPos            *mgl32.Vec2
 	src                   string
 	dirty                 bool
 }
 
 func NewDayAndNightTimeShader() *DayAndNightTimeShader {
+	fireflyPos := mgl32.Vec2{0.85, 0.85}
 	shader := DayAndNightTimeShader{
 		ambientLightIntensity: new(float32),
+		fireflyPos:            &fireflyPos,
 		dirty:                 true,
 	}
 	*shader.ambientLightIntensity = INTENSITY_PER_MINUTE
@@ -67,7 +71,13 @@ func (s *DayAndNightTimeShader) SetAmbientLightIntensity(ali float32) {
 	s.dirty = true
 }
 
+func (s *DayAndNightTimeShader) SetFireflyPos(pos mgl32.Vec2) {
+	*s.fireflyPos = pos
+	s.dirty = true
+}
+
 func (s *DayAndNightTimeShader) AmbientLightIntensity() *float32 { return s.ambientLightIntensity }
+func (s *DayAndNightTimeShader) FireflyPos() *mgl32.Vec2         { return s.fireflyPos }
 
 func (s *DayAndNightTimeShader) Code() (string, error) {
 	if len(s.src) > 0 {

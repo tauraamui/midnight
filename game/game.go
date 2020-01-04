@@ -171,6 +171,7 @@ func (i *Instance) Update() {
 	shader := i.world.Update(i.gamepad, deltaTime)
 	if i.lastShader != shader {
 		if dayNightShader, ok := shader.(*DayAndNightTimeShader); ok {
+			i.shaderCanvas.SetUniform("fireflyPos", dayNightShader.FireflyPos())
 			i.shaderCanvas.SetUniform("ambientLightIntensity", dayNightShader.AmbientLightIntensity())
 		}
 		shaderSrc, err := shader.Code()

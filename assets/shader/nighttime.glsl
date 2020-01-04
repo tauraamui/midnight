@@ -9,6 +9,7 @@ uniform vec4 uTexBounds;
 uniform sampler2D uTexture;
 
 uniform float ambientLightIntensity;
+uniform vec2 fireflyPos;
 
 float attenConst = 1.0;
 float attenLinear = 50.4;
@@ -17,7 +18,7 @@ float attenQuadratic = 129.6;
 vec3 ambientLightColor = vec3(1.0, 1.0, 1.0);
 vec3 spotLightColor = vec3(0.7137, 0.8431, 0.0588);
 
-vec2 fireflyPos = vec2(0.85);
+// vec2 fireflyPos = vec2(0.85);
 
 float getLightAtten(vec2 pos, vec2 t) {
 	float distanceFromLight = distance(t, pos);
