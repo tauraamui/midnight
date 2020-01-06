@@ -10,3 +10,5 @@ require (
 	github.com/markbates/pkger v0.13.0
 	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff
 )
+
+replace github.com/faiface/pixel => github.com/tauraamui/pixel v0.8.1-0.20191105235048-e51d4a6676fa
