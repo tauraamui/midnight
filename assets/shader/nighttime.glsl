@@ -19,8 +19,6 @@ float attenQuadratic = 129.6;
 vec3 ambientLightColor = vec3(1.0, 1.0, 1.0);
 vec3 spotLightColor = vec3(0.7137, 0.8431, 0.0588);
 
-// vec2 fireflyPos = vec2(0.85);
-
 float getLightAtten(vec2 pos, vec2 t) {
 	float distanceFromLight = distance(t, pos);
 	return 1.0 / (attenConst + (attenLinear * distanceFromLight) + (attenQuadratic * pow(distanceFromLight, 2)));
