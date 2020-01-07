@@ -2,6 +2,8 @@ package game
 
 import (
 	"bytes"
+	"fmt"
+	"strings"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/markbates/pkger"
@@ -50,17 +52,21 @@ func (s *PassthroughShader) Dirty() bool { return false }
 
 type DayAndNightTimeShader struct {
 	ambientLightIntensity *float32
-	fireflyPos            *mgl32.Vec2
+	FireflyPositions      []*mgl32.Vec2
 	src                   string
 	dirty                 bool
 }
 
 func NewDayAndNightTimeShader() *DayAndNightTimeShader {
-	fireflyPos := mgl32.Vec2{0.85, 0.85}
 	shader := DayAndNightTimeShader{
 		ambientLightIntensity: new(float32),
-		fireflyPos:            &fireflyPos,
-		dirty:                 true,
+		FireflyPositions: []*mgl32.Vec2{
+			&mgl32.Vec2{0.65, 0.65},
+			&mgl32.Vec2{0.9, 0.9},
+			&mgl32.Vec2{0.1, 0.9},
+			&mgl32.Vec2{0.3, 0.4},
+		},
+		dirty: true,
 	}
 	*shader.ambientLightIntensity = INTENSITY_PER_MINUTE
 	return &shader
@@ -71,13 +77,7 @@ func (s *DayAndNightTimeShader) SetAmbientLightIntensity(ali float32) {
 	s.dirty = true
 }
 
-func (s *DayAndNightTimeShader) SetFireflyPos(pos mgl32.Vec2) {
-	*s.fireflyPos = pos
-	s.dirty = true
-}
-
 func (s *DayAndNightTimeShader) AmbientLightIntensity() *float32 { return s.ambientLightIntensity }
-func (s *DayAndNightTimeShader) FireflyPos() *mgl32.Vec2         { return s.fireflyPos }
 
 func (s *DayAndNightTimeShader) Code() (string, error) {
 	if len(s.src) > 0 {
@@ -97,6 +97,7 @@ func (s *DayAndNightTimeShader) Code() (string, error) {
 	}
 
 	s.src = bytes.String()
+	s.src = strings.Replace(s.src, "//FIREFLY_POSITION_UNIFORMS", convFireflyPositions(s.FireflyPositions), -1)
 	return s.src, nil
 }
 
@@ -104,4 +105,12 @@ func (s *DayAndNightTimeShader) Dirty() bool {
 	wasDirty := s.dirty
 	s.dirty = false
 	return wasDirty
+}
+
+func convFireflyPositions(list []*mgl32.Vec2) string {
+	var buff strings.Builder
+	buff.WriteString(fmt.Sprintf("const int FIREFLIES_COUNT = %d;\n", len(list)))
+	buff.WriteString("uniform vec2[FIREFLIES_COUNT] fireflyPositions;\n")
+
+	return buff.String()
 }
