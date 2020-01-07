@@ -46,6 +46,30 @@ func NewWorld() *World {
 }
 
 func (w *World) Update(gp *Gamepad, dt float64) Shader {
+	w.updateCamPos(gp, dt)
+	// w.Clock.Update()
+	w.updateShader()
+
+	return w.currentShader
+}
+
+func (w *World) Draw(win *pixelgl.Canvas) {
+	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
+	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
+	win.SetMatrix(w.Camera)
+
+	w.batch.Draw(win)
+
+	w.Camera = pixel.IM
+	win.SetMatrix(w.Camera)
+	w.Bunny.Draw(
+		win,
+		w.currentVelocity,
+		w.movingL, w.movingR, w.movingU, w.movingD,
+	)
+}
+
+func (w *World) updateCamPos(gp *Gamepad, dt float64) {
 	speedMultiplier := 1.0
 	if gp.LeftJoystickPressed() {
 		speedMultiplier = 2.5
@@ -77,21 +101,22 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 		w.camPos.Y -= w.currentVelocity
 	}
 
-	// w.Clock.Update()
+}
 
-	if shader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
-		for i, fireflyPos := range shader.FireflyPositions {
+func (w *World) updateShader() {
+	if dayAndNightShader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
+		for i, fireflyPos := range dayAndNightShader.FireflyPositions {
 			newFireflyPos := fireflyPos.Add(mgl32.Vec2{0.0, -0.001})
 			if newFireflyPos.Y() > 0.009 {
-				*shader.FireflyPositions[i] = newFireflyPos
+				*dayAndNightShader.FireflyPositions[i] = newFireflyPos
 			}
 		}
 
 		var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
-		defer func() { shader.SetAmbientLightIntensity(lightIntensity) }()
+		defer func() { dayAndNightShader.SetAmbientLightIntensity(lightIntensity) }()
 		if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 17 {
 			lightIntensity = 1
-			return shader
+			return
 		}
 
 		currentHour := w.Clock.Current.Hour()
@@ -119,27 +144,7 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 				lightIntensity = .11111112
 			}
 		}
-
-		return shader
 	}
-
-	return w.currentShader
-}
-
-func (w *World) Draw(win *pixelgl.Canvas) {
-	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
-	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
-	win.SetMatrix(w.Camera)
-
-	w.batch.Draw(win)
-
-	w.Camera = pixel.IM
-	win.SetMatrix(w.Camera)
-	w.Bunny.Draw(
-		win,
-		w.currentVelocity,
-		w.movingL, w.movingR, w.movingU, w.movingD,
-	)
 }
 
 func (w *World) loadSprites() {
