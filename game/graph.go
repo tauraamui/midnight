@@ -90,7 +90,10 @@ func (g *Graph) Draw(win *pixelgl.Canvas) {
 
 	win.SetMatrix(pixel.IM.Moved(pixel.V(win.Bounds().W()-g.w, win.Bounds().H()-g.h)))
 	g.perfTimeSpentText.Clear()
-	g.perfTimeSpentText.WriteString(fmt.Sprintf("AVG UPDATE+DRAW TIME: %d | %d", g.avgUpdateTime, g.avgDrawTime))
+	_, err := g.perfTimeSpentText.WriteString(fmt.Sprintf("AVG UPDATE+DRAW TIME: %d | %d MICRO", g.avgUpdateTime, g.avgDrawTime))
+	if err != nil {
+		panic(err)
+	}
 	g.perfTimeSpentText.Draw(win, pixel.IM.Scaled(
 		pixel.ZV, 1.02,
 	).Moved(pixel.ZV))
