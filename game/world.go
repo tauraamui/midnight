@@ -105,6 +105,7 @@ func (w *World) updateCamPos(gp *Gamepad, dt float64) {
 
 func (w *World) updateShader() {
 	if dayAndNightShader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
+		// *dayAndNightShader.CamPos = mgl32.Vec2{float32(w.camPos.X), float32(w.camPos.Y)}
 		for i, fireflyPos := range dayAndNightShader.FireflyPositions {
 			newFireflyPos := fireflyPos.Add(mgl32.Vec2{0.0, -0.001})
 			if newFireflyPos.Y() > 0.009 {
@@ -113,7 +114,7 @@ func (w *World) updateShader() {
 		}
 
 		var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
-		defer func() { dayAndNightShader.SetAmbientLightIntensity(lightIntensity) }()
+		defer func() { *dayAndNightShader.AmbientLightIntensity = lightIntensity }()
 		if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 17 {
 			lightIntensity = 1
 			return

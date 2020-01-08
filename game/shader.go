@@ -51,15 +51,18 @@ func (s *PassthroughShader) Code() (string, error) { return s.src, nil }
 func (s *PassthroughShader) Dirty() bool { return false }
 
 type DayAndNightTimeShader struct {
-	ambientLightIntensity *float32
+	AmbientLightIntensity *float32
 	FireflyPositions      []*mgl32.Vec2
-	src                   string
-	dirty                 bool
+	CamPos                *mgl32.Vec2
+
+	src   string
+	dirty bool
 }
 
 func NewDayAndNightTimeShader() *DayAndNightTimeShader {
 	shader := DayAndNightTimeShader{
-		ambientLightIntensity: new(float32),
+		AmbientLightIntensity: new(float32),
+		CamPos:                &mgl32.Vec2{0, 0},
 		FireflyPositions: []*mgl32.Vec2{
 			&mgl32.Vec2{0.65, 0.65},
 			&mgl32.Vec2{0.9, 0.9},
@@ -68,16 +71,9 @@ func NewDayAndNightTimeShader() *DayAndNightTimeShader {
 		},
 		dirty: true,
 	}
-	*shader.ambientLightIntensity = INTENSITY_PER_MINUTE
+	*shader.AmbientLightIntensity = INTENSITY_PER_MINUTE
 	return &shader
 }
-
-func (s *DayAndNightTimeShader) SetAmbientLightIntensity(ali float32) {
-	*s.ambientLightIntensity = ali
-	s.dirty = true
-}
-
-func (s *DayAndNightTimeShader) AmbientLightIntensity() *float32 { return s.ambientLightIntensity }
 
 func (s *DayAndNightTimeShader) Code() (string, error) {
 	if len(s.src) > 0 {

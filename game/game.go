@@ -10,6 +10,7 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
@@ -177,7 +178,9 @@ func (i *Instance) Update() {
 					fmt.Sprintf("fireflyPositions[%d]", uniIndex), pos,
 				)
 			}
-			i.shaderCanvas.SetUniform("ambientLightIntensity", dayNightShader.AmbientLightIntensity())
+			*dayNightShader.CamPos = mgl32.Vec2{float32(i.world.camPos.X), float32(i.world.camPos.Y)}
+			i.shaderCanvas.SetUniform("camPos", dayNightShader.CamPos)
+			i.shaderCanvas.SetUniform("ambientLightIntensity", dayNightShader.AmbientLightIntensity)
 		}
 		shaderSrc, err := shader.Code()
 		if err != nil {

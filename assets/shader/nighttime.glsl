@@ -2,12 +2,11 @@
 #version 330 core
 
 in vec2  vTexCoords;
-
 out vec4 fragColor;
 
 uniform vec4 uTexBounds;
 uniform sampler2D uTexture;
-
+uniform vec2 camPos;
 uniform float ambientLightIntensity;
 
 //FIREFLY_POSITION_UNIFORMS
@@ -20,7 +19,7 @@ vec3 ambientLightColor = vec3(1.0, 1.0, 1.0);
 vec3 spotLightColor = vec3(0.7137, 0.8431, 0.0588);
 
 float getLightAtten(vec2 pos, vec2 t) {
-	float distanceFromLight = distance(t, pos);
+	float distanceFromLight = distance(t, pos-camPos);
 	return 1.0 / (attenConst + (attenLinear * distanceFromLight) + (attenQuadratic * pow(distanceFromLight, 2)));
 }
 
