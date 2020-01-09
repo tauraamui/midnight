@@ -24,6 +24,7 @@ type World struct {
 	Clock  *WorldClock
 
 	camPos                             pixel.Vec
+	shaderCamPos                       pixel.Vec
 	spriteSheet                        pixel.Picture
 	currentShader                      Shader
 	batch                              *pixel.Batch
@@ -55,6 +56,7 @@ func (w *World) Update(gp *Gamepad, dt float64) Shader {
 
 func (w *World) Draw(win *pixelgl.Canvas) {
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
+	w.shaderCamPos = pixel.V(w.camPos.X/(win.Bounds().Norm().W()/SCALE), w.camPos.Y/(win.Bounds().Norm().H()/SCALE))
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(w.Camera)
 
@@ -105,7 +107,7 @@ func (w *World) updateCamPos(gp *Gamepad, dt float64) {
 
 func (w *World) updateShader() {
 	if dayAndNightShader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
-		// *dayAndNightShader.CamPos = mgl32.Vec2{float32(w.camPos.X), float32(w.camPos.Y)}
+		*dayAndNightShader.CamPos = mgl32.Vec2{float32(w.shaderCamPos.X), float32(w.shaderCamPos.Y)}
 		for i, fireflyPos := range dayAndNightShader.FireflyPositions {
 			newFireflyPos := fireflyPos.Add(mgl32.Vec2{0.0, -0.001})
 			if newFireflyPos.Y() > 0.009 {
