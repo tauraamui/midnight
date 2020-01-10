@@ -1,12 +1,14 @@
 package game
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/markbates/pkger"
+	"github.com/tauraamui/midnight/entity"
 	"github.com/tauraamui/midnight/sprite"
 )
 
@@ -20,7 +22,7 @@ const (
 
 type World struct {
 	Camera pixel.Matrix
-	Bunny  *Bunny
+	Bunny  *entity.Bunny
 	Clock  *WorldClock
 
 	camPos                             pixel.Vec
@@ -36,7 +38,7 @@ type World struct {
 func NewWorld() *World {
 	world := World{
 		Camera:        pixel.IM,
-		Bunny:         NewBunny(),
+		Bunny:         entity.NewBunny(SCALE),
 		Clock:         NewWorldClock(),
 		camPos:        pixel.ZV,
 		currentShader: NewDayAndNightTimeShader(),
@@ -112,6 +114,9 @@ func (w *World) updateShader() {
 			newFireflyPos := fireflyPos.Add(mgl32.Vec2{0.0, -0.001})
 			if newFireflyPos.Y() > 0.009 {
 				*dayAndNightShader.FireflyPositions[i] = newFireflyPos
+			}
+			if i+1 == len(dayAndNightShader.FireflyPositions) {
+				fmt.Printf("Projected firefly pos: %f\n", newFireflyPos.Add(mgl32.Vec2{-1 * w.shaderCamPos.X(), -1 * w.shaderCamPos.Y()}))
 			}
 		}
 

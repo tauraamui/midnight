@@ -1,4 +1,4 @@
-package game
+package entity
 
 import (
 	"time"
@@ -10,6 +10,7 @@ import (
 )
 
 type Bunny struct {
+	GAME_SCALE            float64
 	spriteSheet           pixel.Picture
 	animSprites           []*pixel.Sprite
 	rightMotionSprites    []*pixel.Sprite
@@ -20,8 +21,9 @@ type Bunny struct {
 	sinceAnimFrameSwitch  time.Time
 }
 
-func NewBunny() *Bunny {
+func NewBunny(gameScale int) *Bunny {
 	bunny := Bunny{
+		GAME_SCALE:            float64(gameScale),
 		currentAnimFrameIndex: 0,
 		sinceAnimFrameSwitch:  time.Now(),
 	}
@@ -64,7 +66,7 @@ func (b *Bunny) Draw(
 		b.currentAnimFrameIndex = 0
 	}
 
-	b.animSprites[b.currentAnimFrameIndex].Draw(win, pixel.IM.Scaled(pixel.ZV, SCALE).Moved(win.Bounds().Center()))
+	b.animSprites[b.currentAnimFrameIndex].Draw(win, pixel.IM.Scaled(pixel.ZV, b.GAME_SCALE).Moved(win.Bounds().Center()))
 }
 
 func (b *Bunny) loadSprites() {
