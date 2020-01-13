@@ -11,8 +11,8 @@ type Firefly struct {
 
 	position  *mgl32.Vec2
 	arcOrigin *mgl32.Vec2
-	arcRadius float64
-	angleDec  float64
+	arcRadius float32
+	angleDec  float32
 }
 
 func NewFirefly(x, y float32) *Firefly {
@@ -31,8 +31,8 @@ func (f *Firefly) Update() {
 		f.angleDec = 0
 	}
 
-	fx := float64(f.arcOrigin.X()) + f.arcRadius*math.Cos(0)
-	fy := float64(f.arcOrigin.Y()) + f.arcRadius*math.Sin(0)
+	fx := f.arcOrigin.X() + f.arcRadius*float32(math.Cos(0))
+	fy := f.arcOrigin.Y() + f.arcRadius*float32(math.Sin(0))
 
-	*f.position = mgl32.Vec2{float32(fx), float32(fy)}
+	*f.position = mgl32.Vec2{fx, fy}
 }
