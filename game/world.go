@@ -25,6 +25,8 @@ type World struct {
 	Bunny  *entity.Bunny
 	Clock  *WorldClock
 
+	entities []entity.Entity
+
 	camPos                             pixel.Vec
 	shaderCamPos                       mgl32.Vec2
 	spriteSheet                        pixel.Picture
@@ -37,9 +39,14 @@ type World struct {
 
 func NewWorld() *World {
 	world := World{
-		Camera:        pixel.IM,
-		Bunny:         entity.NewBunny(SCALE),
-		Clock:         NewWorldClock(),
+		Camera: pixel.IM,
+		Bunny:  entity.NewBunny(SCALE),
+		Clock:  NewWorldClock(),
+
+		entities: []entity.Entity{
+			entity.NewFirefly(1, 1),
+		},
+
 		camPos:        pixel.ZV,
 		currentShader: NewDayAndNightTimeShader(),
 	}
@@ -49,6 +56,9 @@ func NewWorld() *World {
 }
 
 func (w *World) Update(gp *Gamepad, dt float64) Shader {
+	for _, entity := range w.entities {
+		entity.Update()
+	}
 	w.updateCamPos(gp, dt)
 	// w.Clock.Update()
 	w.updateShader()
