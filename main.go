@@ -19,7 +19,7 @@ func run() {
 	fps := time.Tick(time.Second / 60)
 	second := time.Tick(time.Second)
 	game := game.NewInstance(makeGLWindow())
-	for !game.Quitted() {
+	for !game.Exiting() {
 		game.Update()
 		game.Draw()
 

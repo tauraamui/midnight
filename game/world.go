@@ -10,6 +10,7 @@ import (
 	"github.com/markbates/pkger"
 	"github.com/tauraamui/midnight/entity"
 	"github.com/tauraamui/midnight/sprite"
+	"github.com/tauraamui/midnight/ui/input"
 )
 
 const (
@@ -55,7 +56,7 @@ func NewWorld() *World {
 	return &world
 }
 
-func (w *World) Update(gp *Gamepad, dt float64) Shader {
+func (w *World) Update(gp *input.Gamepad, dt float64) Shader {
 	for _, entity := range w.entities {
 		entity.Update()
 	}
@@ -83,7 +84,7 @@ func (w *World) Draw(win *pixelgl.Canvas) {
 	)
 }
 
-func (w *World) updateCamPos(gp *Gamepad, dt float64) {
+func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {
 	speedMultiplier := 1.0
 	if gp.LeftJoystickPressed() {
 		speedMultiplier = 2.5
