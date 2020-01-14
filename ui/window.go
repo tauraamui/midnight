@@ -3,6 +3,7 @@ package ui
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/tauraamui/midnight/ui/debug"
 	"golang.org/x/image/colornames"
 )
 
@@ -21,6 +22,8 @@ func (w *Window) Draw(worldDraw func(*pixelgl.Canvas)) {
 	w.worldCanvas.Clear(colornames.Lightgray)
 	w.debugCanvas.Clear(colornames.Lightgray)
 	w.shaderCanvas.Clear(colornames.Lightgray)
+
+	debug.NewOverlay()
 
 	// render world onto own canvas
 	worldDraw(w.worldCanvas)
