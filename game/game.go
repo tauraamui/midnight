@@ -12,6 +12,7 @@ import (
 	"github.com/faiface/pixel/text"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/golang/freetype/truetype"
+	"github.com/tauraamui/midnight/ui"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
@@ -130,7 +131,7 @@ type Instance struct {
 	lastDelta       time.Time
 }
 
-func NewInstance(win *pixelgl.Window) *Instance {
+func NewInstance(win *ui.Window) *Instance {
 	return &Instance{
 		FPS:                   0,
 		CurrentFramesInSecond: 0,
