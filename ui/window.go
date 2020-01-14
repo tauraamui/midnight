@@ -8,6 +8,8 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+var SCALE float64
+
 type Window struct {
 	FPS int
 
@@ -21,7 +23,9 @@ type Window struct {
 	shaderCanvas *pixelgl.Canvas
 }
 
-func NewWindow(win *pixelgl.Window) *Window {
+func NewWindow(win *pixelgl.Window, scale float64) *Window {
+	SCALE = scale
+	debug.SCALE = SCALE
 	return &Window{
 		root:    win,
 		input:   input.NewGamepad(win),
@@ -34,6 +38,7 @@ func (w *Window) Update() *input.Gamepad {
 	if w.root.Pressed(pixelgl.KeyEscape) {
 		w.closing = true
 	}
+
 	return w.input
 }
 

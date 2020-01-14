@@ -15,7 +15,7 @@ type Instance struct {
 
 func NewInstance(win *pixelgl.Window) *Instance {
 	return &Instance{
-		window: ui.NewWindow(win),
+		window: ui.NewWindow(win, SCALE),
 		world:  NewWorld(),
 
 		lastDelta: time.Now(),

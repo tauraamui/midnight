@@ -14,6 +14,8 @@ import (
 	"golang.org/x/image/font/gofont/goregular"
 )
 
+var SCALE float64
+
 const (
 	DEBUG_TEXT_SCALE = 3
 )
