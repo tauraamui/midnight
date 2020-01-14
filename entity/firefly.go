@@ -25,7 +25,7 @@ func NewFirefly(x, y float32) *Firefly {
 	}
 }
 
-func (f *Firefly) Update() *mgl32.Vec2 {
+func (f *Firefly) Update() {
 	f.angleDec += 1
 	if f.angleDec >= 360 {
 		f.angleDec = 0
@@ -35,7 +35,6 @@ func (f *Firefly) Update() *mgl32.Vec2 {
 	fy := f.arcOrigin.Y() + f.arcRadius*float32(math.Sin(float64(decToRad(f.angleDec))))
 
 	*f.position = mgl32.Vec2{fx, fy}
-	return f.position
 	// fmt.Printf("Firefly position: %f, %f\n", f.position.X(), f.position.Y())
 }
 
