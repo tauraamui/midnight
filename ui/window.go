@@ -39,6 +39,8 @@ func (w *Window) Update() *input.Gamepad {
 		w.closing = true
 	}
 
+	w.overlay.Update(w.root, 60)
+
 	return w.input
 }
 

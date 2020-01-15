@@ -35,3 +35,7 @@ func (i *Instance) Draw() {
 func (i *Instance) Exiting() bool {
 	return i.window.Closing()
 }
+
+func (i *Instance) SetCurrentFPS(fps int) {
+
+}

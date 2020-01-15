@@ -19,6 +19,8 @@ func run() {
 	fps := time.Tick(time.Second / 60)
 	second := time.Tick(time.Second)
 	game := game.NewInstance(makeGLWindow())
+
+	framesInSecond := 0
 	for !game.Exiting() {
 		game.Update()
 		game.Draw()
@@ -26,10 +28,10 @@ func run() {
 		<-fps
 		select {
 		case <-second:
-			game.FPS = game.CurrentFramesInSecond + 1
-			game.CurrentFramesInSecond = 0
+			game.SetCurrentFPS(framesInSecond + 1)
+			framesInSecond = 0
 		default:
-			game.CurrentFramesInSecond++
+			framesInSecond++
 		}
 	}
 }
