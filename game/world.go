@@ -62,7 +62,7 @@ func (w *World) Update(gp *input.Gamepad, dt float64) Shader {
 	}
 	w.updateCamPos(gp, dt)
 	// w.Clock.Update()
-	w.updateShader()
+	// w.updateShader()
 
 	return w.currentShader
 }
