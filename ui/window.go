@@ -13,10 +13,11 @@ var SCALE float64
 type Window struct {
 	FPS int
 
+	fullscreen bool
+	closing    bool
+
 	root         *pixelgl.Window
 	input        *input.Gamepad
-	fullscreen   bool
-	closing      bool
 	overlay      *debug.DebugOverlay
 	worldCanvas  *pixelgl.Canvas
 	debugCanvas  *pixelgl.Canvas
@@ -38,6 +39,8 @@ func NewWindow(win *pixelgl.Window, scale float64) *Window {
 }
 
 func (w *Window) Update(currentFPS int) *input.Gamepad {
+	w.FPS = currentFPS
+
 	w.root.UpdateInput()
 	if w.root.Pressed(pixelgl.KeyEscape) {
 		w.closing = true
@@ -47,7 +50,7 @@ func (w *Window) Update(currentFPS int) *input.Gamepad {
 		w.toggleFullscreen()
 	}
 
-	w.overlay.Update(w.root, currentFPS)
+	w.overlay.Update(w.root, w.FPS)
 
 	return w.input
 }
