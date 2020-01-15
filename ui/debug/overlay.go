@@ -51,7 +51,12 @@ func (do *DebugOverlay) Update(win *pixelgl.Window, frames int) {
 		if !do.enabled {
 			do.fpsText.Clear()
 			do.perfGraph.TimesPerFrame = []TimeSpent{}
+			return
 		}
+	}
+
+	if !do.enabled {
+		return
 	}
 
 	if frames < len(do.perfGraph.TimesPerFrame) {
