@@ -8,9 +8,10 @@ import (
 )
 
 type Instance struct {
-	window    *ui.Window
-	world     *World
-	lastDelta time.Time
+	currentFPS int
+	window     *ui.Window
+	world      *World
+	lastDelta  time.Time
 }
 
 func NewInstance(win *pixelgl.Window) *Instance {
@@ -23,8 +24,8 @@ func NewInstance(win *pixelgl.Window) *Instance {
 }
 
 func (i *Instance) Update() {
-	dt := time.Since(i.lastDelta).Milliseconds()
-	i.world.Update(i.window.Update(), float64(dt))
+	dt := time.Since(i.lastDelta).Seconds()
+	i.world.Update(i.window.Update(i.currentFPS), float64(dt))
 	i.lastDelta = time.Now()
 }
 
@@ -37,5 +38,5 @@ func (i *Instance) Exiting() bool {
 }
 
 func (i *Instance) SetCurrentFPS(fps int) {
-
+	i.currentFPS = fps
 }
