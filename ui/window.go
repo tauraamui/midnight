@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"time"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/tauraamui/midnight/ui/debug"
@@ -38,15 +40,17 @@ func NewWindow(win *pixelgl.Window, scale float64) *Window {
 	}
 }
 
-func (w *Window) Update(currentFPS int) *input.Gamepad {
+func (w *Window) Update(currentFPS int, updateDuration time.Duration) *input.Gamepad {
 	w.FPS = currentFPS
+	w.overlay.SetUpdateTimeDuration(updateDuration)
+	w.overlay.Update(w.root, w.FPS)
 
 	w.root.UpdateInput()
-	if w.root.Pressed(pixelgl.KeyEscape) {
+	if w.root.JustPressed(pixelgl.KeyEscape) {
 		w.closing = true
 	}
 
-	if w.root.Pressed(pixelgl.KeyF) {
+	if w.root.JustPressed(pixelgl.KeyF) {
 		w.toggleFullscreen()
 	}
 
@@ -56,6 +60,7 @@ func (w *Window) Update(currentFPS int) *input.Gamepad {
 }
 
 func (w *Window) Draw(worldDraw func(*pixelgl.Canvas)) {
+	beforeWorldAndShaderDraw := time.Now()
 	w.root.Clear(colornames.Black)
 
 	w.worldCanvas.Clear(colornames.Lightgray)
@@ -70,6 +75,8 @@ func (w *Window) Draw(worldDraw func(*pixelgl.Canvas)) {
 	// paint finished shader canvas onto debug canvas
 	w.shaderCanvas.Draw(w.debugCanvas, pixel.IM.Moved(w.root.Bounds().Center()))
 
+	w.overlay.SetDrawTimeDuration(time.Since(beforeWorldAndShaderDraw))
+
 	// draw debug elements above everything else
 	w.overlay.Draw(w.debugCanvas, w.input, w.FPS)
 
@@ -83,6 +90,7 @@ func (w *Window) Fullscreen() bool { return w.fullscreen }
 func (w *Window) Closing() bool { return w.closing || w.root.Closed() }
 
 func (w *Window) toggleFullscreen() {
+	// println(w.fullscreen)
 	defer func() {
 		w.root.Update()
 		w.worldCanvas.SetBounds(w.root.Canvas().Bounds())

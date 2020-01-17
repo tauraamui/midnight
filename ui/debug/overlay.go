@@ -59,6 +59,8 @@ func (do *DebugOverlay) Update(win *pixelgl.Window, frames int) {
 		return
 	}
 
+	println(len(do.perfGraph.TimesPerFrame))
+
 	if frames < len(do.perfGraph.TimesPerFrame) {
 		do.perfGraph.TimesPerFrame[frames] = TimeSpent{
 			DrawTime:   do.drawTimeDuration,
@@ -115,6 +117,9 @@ func (do *DebugOverlay) Draw(win *pixelgl.Canvas, gp *input.Gamepad, fps int) {
 	// 	pixel.ZV, 1.2,
 	// ).Moved(pixel.V(win.Bounds().W()-200, 10*1.2)))
 }
+
+func (do *DebugOverlay) SetDrawTimeDuration(d time.Duration)   { do.drawTimeDuration = d }
+func (do *DebugOverlay) SetUpdateTimeDuration(d time.Duration) { do.updateTimeDuration = d }
 
 func ttfFromBytesMust(b []byte, size float64) font.Face {
 	ttf, err := truetype.Parse(b)
