@@ -30,8 +30,10 @@ func run() {
 		case <-second:
 			game.SetCurrentFPS(framesInSecond + 1)
 			framesInSecond = 0
+			game.SetCurrentFramesInSecond(framesInSecond)
 		default:
 			framesInSecond++
+			game.SetCurrentFramesInSecond(framesInSecond)
 		}
 	}
 }

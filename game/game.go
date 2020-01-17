@@ -9,6 +9,7 @@ import (
 
 type Instance struct {
 	currentFPS              int
+	currentFramesInSecond   int
 	window                  *ui.Window
 	world                   *World
 	lastDelta               time.Time
@@ -42,3 +43,5 @@ func (i *Instance) Exiting() bool {
 func (i *Instance) SetCurrentFPS(fps int) {
 	i.currentFPS = fps
 }
+
+func (i *Instance) SetCurrentFramesInSecond(frames int) { i.currentFramesInSecond = frames }
