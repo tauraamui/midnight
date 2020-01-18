@@ -59,8 +59,6 @@ func (do *DebugOverlay) Update(win *pixelgl.Window, frames int) {
 		return
 	}
 
-	println(len(do.perfGraph.TimesPerFrame))
-
 	if frames < len(do.perfGraph.TimesPerFrame) {
 		do.perfGraph.TimesPerFrame[frames] = TimeSpent{
 			DrawTime:   do.drawTimeDuration,

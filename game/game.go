@@ -28,7 +28,9 @@ func NewInstance(win *pixelgl.Window) *Instance {
 func (i *Instance) Update() {
 	i.lastTimeBeforeAllUpdate = time.Now()
 	dt := time.Since(i.lastDelta).Seconds()
-	i.world.Update(i.window.Update(i.currentFPS, time.Since(i.lastTimeBeforeAllUpdate)), float64(dt))
+	i.world.Update(i.window.Update(
+		i.currentFPS, i.currentFramesInSecond, time.Since(i.lastTimeBeforeAllUpdate),
+	), float64(dt))
 	i.lastDelta = time.Now()
 }
 
