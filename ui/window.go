@@ -42,10 +42,8 @@ func NewWindow(win *pixelgl.Window, scale float64) *Window {
 
 func (w *Window) Update(currentFPS, currentFramesInSecond int, updateDuration time.Duration) *input.Gamepad {
 	w.FPS = currentFPS
-	w.overlay.SetUpdateTimeDuration(updateDuration)
-	w.overlay.Update(w.root, currentFramesInSecond)
-
 	w.root.UpdateInput()
+
 	if w.root.JustPressed(pixelgl.KeyEscape) {
 		w.closing = true
 	}
@@ -54,7 +52,8 @@ func (w *Window) Update(currentFPS, currentFramesInSecond int, updateDuration ti
 		w.toggleFullscreen()
 	}
 
-	w.overlay.Update(w.root, w.FPS)
+	w.overlay.SetUpdateTimeDuration(updateDuration)
+	w.overlay.Update(w.root, currentFramesInSecond)
 
 	return w.input
 }
