@@ -14,6 +14,7 @@ type Instance struct {
 	world                   *World
 	lastDelta               time.Time
 	lastTimeBeforeAllUpdate time.Time
+	updateDuration          time.Duration
 }
 
 func NewInstance(win *pixelgl.Window) *Instance {
@@ -26,11 +27,11 @@ func NewInstance(win *pixelgl.Window) *Instance {
 }
 
 func (i *Instance) Update() {
-	i.lastTimeBeforeAllUpdate = time.Now()
 	dt := time.Since(i.lastDelta).Seconds()
-	i.world.Update(i.window.Update(
-		i.currentFPS, i.currentFramesInSecond, time.Since(i.lastTimeBeforeAllUpdate),
-	), float64(dt))
+	gp := i.window.Update(i.currentFPS, i.currentFramesInSecond, i.updateDuration)
+	i.lastTimeBeforeAllUpdate = time.Now()
+	i.world.Update(gp, dt)
+	i.updateDuration = time.Since(i.lastTimeBeforeAllUpdate)
 	i.lastDelta = time.Now()
 }
 
