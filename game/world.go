@@ -28,10 +28,11 @@ type World struct {
 	Bunny  *entity.Bunny
 	Clock  *WorldClock
 
-	fireflies []entity.Entity
+	fireflies             []entity.Entity
+	ambientLightIntensity *float32
+	shaderCamPos          *mgl32.Vec2
 
 	camPos                             pixel.Vec
-	shaderCamPos                       mgl32.Vec2
 	spriteSheet                        pixel.Picture
 	shader                             *shader.Shader
 	batch                              *pixel.Batch
@@ -49,14 +50,14 @@ func NewWorld() *World {
 		fireflies: []entity.Entity{
 			entity.NewFirefly(1, 1),
 		},
+		ambientLightIntensity: new(float32),
 
 		camPos: pixel.ZV,
 		shader: shader.New("/assets/shader/nighttime.glsl"),
 	}
 	world.loadSprites()
 
-	callbacks := world.shader.StrReplaceCallbacks
-	callbacks = append(callbacks, func(src string) string {
+	world.shader.StrReplaceCallbacks = append(world.shader.StrReplaceCallbacks, func(src string) string {
 		return strings.Replace(
 			src,
 			"//FIREFLY_POSITION_UNIFORMS",
@@ -64,6 +65,9 @@ func NewWorld() *World {
 			-1,
 		)
 	})
+
+	world.shader.Uniforms["camPos"] = world.shaderCamPos
+	world.shader.Uniforms["ambientLightIntensity"] = world.ambientLightIntensity
 
 	for i, firefly := range world.fireflies {
 		world.shader.Uniforms[fmt.Sprintf("fireflyPositions[%d]", i)] = firefly.Pos()
@@ -78,14 +82,14 @@ func (w *World) Update(gp *input.Gamepad, dt float64) *shader.Shader {
 	}
 	w.updateCamPos(gp, dt)
 	// w.Clock.Update()
-	// w.updateShader()
+	w.updateShader()
 
 	return w.shader
 }
 
 func (w *World) Draw(win *pixelgl.Canvas) {
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
-	w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
+	w.shaderCamPos = &mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(w.Camera)
 
@@ -135,51 +139,39 @@ func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {
 }
 
 func (w *World) updateShader() {
-	if dayAndNightShader, ok := w.shader.(*DayAndNightTimeShader); ok {
-		*dayAndNightShader.CamPos = w.shaderCamPos
-		for i, fireflyPos := range dayAndNightShader.FireflyPositions {
-			newFireflyPos := fireflyPos.Add(mgl32.Vec2{0.0, -0.001})
-			if newFireflyPos.Y() > 0.009 {
-				*dayAndNightShader.FireflyPositions[i] = newFireflyPos
+	var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
+	if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 17 {
+		lightIntensity = 1
+		return
+	}
+
+	currentHour := w.Clock.Current.Hour()
+	currentMinutes := w.Clock.Current.Minute()
+
+	isMorning := currentHour > 4 && currentHour < 8
+	isEvening := currentHour > 17 && currentHour < 21
+
+	if isMorning || isEvening {
+		minuteOffset := func() int {
+			if isMorning {
+				return 300
 			}
-			if i+1 == len(dayAndNightShader.FireflyPositions) {
-				fmt.Printf("Projected firefly pos: %f\n", newFireflyPos.Add(mgl32.Vec2{-1 * w.shaderCamPos.X(), -1 * w.shaderCamPos.Y()}))
-			}
+			return 1080
+		}()
+
+		minutesBetween := (currentHour*60 + currentMinutes - minuteOffset) + 1
+		lightIntensity = (float32(.049999996) * float32(minutesBetween) * float32(.11111112))
+
+		if isEvening {
+			lightIntensity = 1 - lightIntensity
 		}
 
-		var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
-		defer func() { *dayAndNightShader.AmbientLightIntensity = lightIntensity }()
-		if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 17 {
-			lightIntensity = 1
-			return
-		}
-
-		currentHour := w.Clock.Current.Hour()
-		currentMinutes := w.Clock.Current.Minute()
-
-		isMorning := currentHour > 4 && currentHour < 8
-		isEvening := currentHour > 17 && currentHour < 21
-
-		if isMorning || isEvening {
-			minuteOffset := func() int {
-				if isMorning {
-					return 300
-				}
-				return 1080
-			}()
-
-			minutesBetween := (currentHour*60 + currentMinutes - minuteOffset) + 1
-			lightIntensity = (float32(.049999996) * float32(minutesBetween) * float32(.11111112))
-
-			if isEvening {
-				lightIntensity = 1 - lightIntensity
-			}
-
-			if lightIntensity < .11111112 {
-				lightIntensity = .11111112
-			}
+		if lightIntensity < .11111112 {
+			lightIntensity = .11111112
 		}
 	}
+
+	w.ambientLightIntensity = &lightIntensity
 }
 
 func (w *World) loadSprites() {

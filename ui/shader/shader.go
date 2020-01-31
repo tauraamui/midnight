@@ -27,10 +27,10 @@ func New(srcPath string) *Shader {
 	}
 
 	shader := Shader{
-		path:  srcPath,
-		dirty: true,
+		Uniforms: map[string]interface{}{},
+		path:     srcPath,
+		dirty:    true,
 	}
-	// *shader.AmbientLightIntensity = INTENSITY_PER_MINUTE
 	return &shader
 }
 
