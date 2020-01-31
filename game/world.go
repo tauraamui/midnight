@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"image/color"
+	"strings"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -11,6 +12,7 @@ import (
 	"github.com/tauraamui/midnight/entity"
 	"github.com/tauraamui/midnight/sprite"
 	"github.com/tauraamui/midnight/ui/input"
+	"github.com/tauraamui/midnight/ui/shader"
 )
 
 const (
@@ -26,12 +28,12 @@ type World struct {
 	Bunny  *entity.Bunny
 	Clock  *WorldClock
 
-	entities []entity.Entity
+	fireflies []entity.Entity
 
 	camPos                             pixel.Vec
 	shaderCamPos                       mgl32.Vec2
 	spriteSheet                        pixel.Picture
-	currentShader                      Shader
+	shader                             *shader.Shader
 	batch                              *pixel.Batch
 	grassTiles                         []*pixel.Sprite
 	movingL, movingR, movingU, movingD bool
@@ -44,27 +46,41 @@ func NewWorld() *World {
 		Bunny:  entity.NewBunny(SCALE),
 		Clock:  NewWorldClock(),
 
-		entities: []entity.Entity{
+		fireflies: []entity.Entity{
 			entity.NewFirefly(1, 1),
 		},
 
-		camPos:        pixel.ZV,
-		currentShader: NewDayAndNightTimeShader(),
+		camPos: pixel.ZV,
+		shader: shader.New("/assets/shader/nighttime.glsl"),
 	}
 	world.loadSprites()
+
+	callbacks := world.shader.StrReplaceCallbacks
+	callbacks = append(callbacks, func(src string) string {
+		return strings.Replace(
+			src,
+			"//FIREFLY_POSITION_UNIFORMS",
+			fmt.Sprintf("uniform vec2[%d] fireflyPositions", len(world.fireflies)),
+			-1,
+		)
+	})
+
+	for i, firefly := range world.fireflies {
+		world.shader.Uniforms[fmt.Sprintf("fireflyPositions[%d]", i)] = firefly.Pos()
+	}
 
 	return &world
 }
 
-func (w *World) Update(gp *input.Gamepad, dt float64) Shader {
-	for _, entity := range w.entities {
+func (w *World) Update(gp *input.Gamepad, dt float64) *shader.Shader {
+	for _, entity := range w.fireflies {
 		entity.Update()
 	}
 	w.updateCamPos(gp, dt)
 	// w.Clock.Update()
 	// w.updateShader()
 
-	return w.currentShader
+	return w.shader
 }
 
 func (w *World) Draw(win *pixelgl.Canvas) {
@@ -119,7 +135,7 @@ func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {
 }
 
 func (w *World) updateShader() {
-	if dayAndNightShader, ok := w.currentShader.(*DayAndNightTimeShader); ok {
+	if dayAndNightShader, ok := w.shader.(*DayAndNightTimeShader); ok {
 		*dayAndNightShader.CamPos = w.shaderCamPos
 		for i, fireflyPos := range dayAndNightShader.FireflyPositions {
 			newFireflyPos := fireflyPos.Add(mgl32.Vec2{0.0, -0.001})

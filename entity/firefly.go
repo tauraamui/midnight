@@ -38,6 +38,14 @@ func (f *Firefly) Update() {
 	// fmt.Printf("Firefly position: %f, %f\n", f.position.X(), f.position.Y())
 }
 
+func (f *Firefly) Pos() *mgl32.Vec2 {
+	return f.position
+}
+
+func (f *Firefly) UniformName() string {
+	return "fireflyPositions"
+}
+
 func decToRad(dec float32) float32 {
 	return dec * (math.Pi / 180)
 }
