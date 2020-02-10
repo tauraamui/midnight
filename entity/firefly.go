@@ -20,13 +20,13 @@ func NewFirefly(x, y float32) *Firefly {
 		Render:    true,
 		position:  &mgl32.Vec2{x, y},
 		arcOrigin: &mgl32.Vec2{x - 1, y - 1},
-		arcRadius: 5,
+		arcRadius: 0.045,
 		angleDec:  0,
 	}
 }
 
 func (f *Firefly) Update() {
-	f.angleDec += 1
+	f.angleDec += 3
 	if f.angleDec >= 360 {
 		f.angleDec = 0
 	}
@@ -35,7 +35,14 @@ func (f *Firefly) Update() {
 	fy := f.arcOrigin.Y() + f.arcRadius*float32(math.Sin(float64(decToRad(f.angleDec))))
 
 	*f.position = mgl32.Vec2{fx, fy}
-	// fmt.Printf("Firefly position: %f, %f\n", f.position.X(), f.position.Y())
+}
+
+func (f *Firefly) Pos() *mgl32.Vec2 {
+	return f.position
+}
+
+func (f *Firefly) UniformName() string {
+	return "fireflyPositions"
 }
 
 func decToRad(dec float32) float32 {
