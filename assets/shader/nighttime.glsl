@@ -29,7 +29,7 @@ void main() {
 	vec3 tColor = texture(uTexture, t).rgb;
 
 	vec3 ambientLight = (ambientLightIntensity * ambientLightColor);
-	vec3 pointlightLight = (getLightAtten(fireflyPositions[0], t) * spotLightColor);
+	// vec3 pointlightLight = (getLightAtten(fireflyPositions[0], t) * spotLightColor);
 
 	vec3 ambColor = ambientLight;
 
