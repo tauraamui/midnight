@@ -9,10 +9,11 @@ import (
 type Firefly struct {
 	Render bool
 
-	position  *mgl32.Vec2
-	arcOrigin *mgl32.Vec2
-	arcRadius float32
-	angleDec  float32
+	progressiveCurve float32
+	position         *mgl32.Vec2
+	arcOrigin        *mgl32.Vec2
+	arcRadius        float32
+	angleDec         float32
 }
 
 func NewFirefly(x, y float32) *Firefly {
@@ -31,10 +32,19 @@ func (f *Firefly) Update() {
 		f.angleDec = 0
 	}
 
-	fx := f.arcOrigin.X() + f.arcRadius*float32(math.Cos(float64(decToRad(f.angleDec))))
-	fy := f.arcOrigin.Y() + f.arcRadius*float32(math.Sin(float64(decToRad(f.angleDec))))
+	// fx := f.arcOrigin.X() + f.arcRadius*float32(math.Cos(float64(decToRad(f.angleDec))))
+	// fy := f.arcOrigin.Y() + f.arcRadius*float32(math.Sin(float64(decToRad(f.angleDec))))
 
-	*f.position = mgl32.Vec2{fx, fy}
+	// *f.position = mgl32.Vec2{fx, fy}
+
+	curvePoint := mgl32.BezierCurve2D(
+		f.progressiveCurve, []mgl32.Vec2{mgl32.Vec2{0, 0}, mgl32.Vec2{0.5, 1}, mgl32.Vec2{0.5, 1}, mgl32.Vec2{1, 0}},
+	)
+	*f.position = curvePoint
+	f.progressiveCurve += 0.001
+	if f.progressiveCurve > 1 {
+		f.progressiveCurve = 0
+	}
 }
 
 func (f *Firefly) Pos() *mgl32.Vec2 {
