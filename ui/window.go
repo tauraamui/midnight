@@ -1,12 +1,14 @@
 package ui
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/tauraamui/midnight/ui/debug"
 	"github.com/tauraamui/midnight/ui/input"
+	"github.com/tauraamui/midnight/ui/shader"
 	"golang.org/x/image/colornames"
 )
 
@@ -24,6 +26,7 @@ type Window struct {
 	worldCanvas  *pixelgl.Canvas
 	debugCanvas  *pixelgl.Canvas
 	shaderCanvas *pixelgl.Canvas
+	shader       *shader.Shader
 }
 
 func NewWindow(win *pixelgl.Window, scale float64) *Window {
@@ -82,6 +85,30 @@ func (w *Window) Draw(worldDraw func(*pixelgl.Canvas)) {
 	// draw finished debug canvas onto window
 	w.debugCanvas.Draw(w.root, pixel.IM.Moved(w.root.Bounds().Center()))
 	w.root.Update()
+}
+
+func (w *Window) SetShader(s *shader.Shader) {
+	if w.shader == s && !s.Dirty() {
+		return
+	}
+
+	w.shader = s
+
+	if w.shader == nil {
+		return
+	}
+
+	src, err := w.shader.Code()
+	if err != nil {
+		panic(fmt.Errorf("unable to generate fragment shader code: %w", err))
+	}
+
+	for name, uniRef := range w.shader.Uniforms {
+		fmt.Printf("Setting uniform %s: %#v\n", name, uniRef)
+		w.shaderCanvas.SetUniform(name, uniRef)
+	}
+
+	w.shaderCanvas.SetFragmentShader(src)
 }
 
 func (w *Window) Fullscreen() bool { return w.fullscreen }

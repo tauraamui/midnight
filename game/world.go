@@ -51,6 +51,7 @@ func NewWorld() *World {
 			entity.NewFirefly(1, 1),
 		},
 		ambientLightIntensity: new(float32),
+		shaderCamPos:          &mgl32.Vec2{},
 
 		camPos: pixel.ZV,
 		shader: shader.New("/assets/shader/nighttime.glsl"),
@@ -61,7 +62,7 @@ func NewWorld() *World {
 		return strings.Replace(
 			src,
 			"//FIREFLY_POSITION_UNIFORMS",
-			fmt.Sprintf("uniform vec2[%d] fireflyPositions", len(world.fireflies)),
+			fmt.Sprintf("uniform vec2[%d] fireflyPositions;", len(world.fireflies)),
 			-1,
 		)
 	})
@@ -89,7 +90,7 @@ func (w *World) Update(gp *input.Gamepad, dt float64) *shader.Shader {
 
 func (w *World) Draw(win *pixelgl.Canvas) {
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
-	w.shaderCamPos = &mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
+	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
 	win.SetMatrix(w.Camera)
 
@@ -142,6 +143,7 @@ func (w *World) updateShader() {
 	var lightIntensity float32 = MINIMUM_LIGHT_INTENSITY
 	if w.Clock.Current.Hour() >= 8 && w.Clock.Current.Hour() <= 17 {
 		lightIntensity = 1
+		*w.ambientLightIntensity = lightIntensity
 		return
 	}
 
@@ -171,7 +173,7 @@ func (w *World) updateShader() {
 		}
 	}
 
-	w.ambientLightIntensity = &lightIntensity
+	*w.ambientLightIntensity = lightIntensity
 }
 
 func (w *World) loadSprites() {

@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/tauraamui/midnight/ui/shader"
 	"time"
 
 	"github.com/faiface/pixel/pixelgl"
@@ -8,10 +9,13 @@ import (
 )
 
 type Instance struct {
-	currentFPS              int
-	currentFramesInSecond   int
-	window                  *ui.Window
-	world                   *World
+	currentFPS            int
+	currentFramesInSecond int
+
+	window *ui.Window
+	world  *World
+	shader *shader.Shader
+
 	lastDelta               time.Time
 	lastTimeBeforeAllUpdate time.Time
 	updateDuration          time.Duration
@@ -30,12 +34,13 @@ func (i *Instance) Update() {
 	dt := time.Since(i.lastDelta).Seconds()
 	gp := i.window.Update(i.currentFPS, i.currentFramesInSecond, i.updateDuration)
 	i.lastTimeBeforeAllUpdate = time.Now()
-	i.world.Update(gp, dt)
+	i.shader = i.world.Update(gp, dt)
 	i.updateDuration = time.Since(i.lastTimeBeforeAllUpdate)
 	i.lastDelta = time.Now()
 }
 
 func (i *Instance) Draw() {
+	i.window.SetShader(i.shader)
 	i.window.Draw(i.world.Draw)
 }
 
