@@ -1,5 +1,5 @@
 # midnight
 
-Game current visual state (testing adding light points / fireflies):
+Game current visual state (testing start to have natural firefly flight path):
 
-![midnight-perf-graph](midnight-perf-graph.gif)
+![firefly-flying-in-circle](firefly-flying-in-circle.gif)
