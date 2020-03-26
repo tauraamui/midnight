@@ -51,12 +51,14 @@ func (w *Window) Update(currentFPS, currentFramesInSecond int, updateDuration ti
 		w.closing = true
 	}
 
+	var fullscreenToggled bool
 	if w.root.JustPressed(pixelgl.KeyF) {
 		w.toggleFullscreen()
+		fullscreenToggled = true
 	}
 
 	w.overlay.SetUpdateTimeDuration(updateDuration)
-	w.overlay.Update(w.root, currentFramesInSecond)
+	w.overlay.Update(w.root, currentFramesInSecond, fullscreenToggled)
 
 	return w.input
 }

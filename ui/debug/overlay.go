@@ -45,7 +45,7 @@ func NewDebugOverlay(win *pixelgl.Window) *DebugOverlay {
 	}
 }
 
-func (do *DebugOverlay) Update(win *pixelgl.Window, frames int) {
+func (do *DebugOverlay) Update(win *pixelgl.Window, frames int, fsToggled bool) {
 	if win.JustReleased(pixelgl.KeyX) {
 		do.enabled = !do.enabled
 		if !do.enabled {
@@ -58,6 +58,8 @@ func (do *DebugOverlay) Update(win *pixelgl.Window, frames int) {
 	if !do.enabled {
 		return
 	}
+
+	do.perfGraph.FullscreenToggled = fsToggled
 
 	if frames < len(do.perfGraph.TimesPerFrame) {
 		do.perfGraph.TimesPerFrame[frames] = TimeSpent{

@@ -19,7 +19,8 @@ type TimeSpent struct {
 }
 
 type Graph struct {
-	TimesPerFrame []TimeSpent
+	TimesPerFrame     []TimeSpent
+	FullscreenToggled bool
 
 	perfTimeSpentText *text.Text
 	avgUpdateTime     int64
@@ -37,7 +38,6 @@ func NewGraph(win *pixelgl.Window) *Graph {
 
 		perfTimeSpentText: text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 		imd:               imdraw.New(win),
-		initialWinW:       win.Bounds().W(),
 		barWidth:          (win.Bounds().W() * 0.45) / 60,
 		w:                 win.Bounds().W() * 0.45,
 		h:                 150,
@@ -45,12 +45,11 @@ func NewGraph(win *pixelgl.Window) *Graph {
 }
 
 func (g *Graph) Draw(win *pixelgl.Canvas) {
-	if win.Bounds().W() != g.initialWinW {
+	if g.FullscreenToggled {
 		// adding seemingly pointless 1 to the division in case list is ever 0
 		// otherwise the whole program would come crashing down around our bun ears
 		g.barWidth = (win.Bounds().W() * 0.30) / float64(len(g.TimesPerFrame)+1)
 		g.w = win.Bounds().W() * 0.30
-		g.initialWinW = win.Bounds().W()
 	}
 	g.imd.SetMatrix(pixel.IM.Moved(pixel.V(win.Bounds().W()-g.w, win.Bounds().H()-g.h)))
 	g.imd.Clear()
