@@ -48,7 +48,7 @@ func NewWorld() *World {
 		Clock:  NewWorldClock(),
 
 		fireflies: []entity.Entity{
-			entity.NewFirefly(0, 0),
+			entity.NewFirefly(0.5, 0.5),
 		},
 		ambientLightIntensity: new(float32),
 		shaderCamPos:          &mgl32.Vec2{},
