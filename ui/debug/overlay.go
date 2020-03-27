@@ -55,7 +55,7 @@ func (do *DebugOverlay) Update(win *pixelgl.Window, frames int, fsToggled bool) 
 		}
 	}
 
-	if !do.enabled {
+	if fsToggled || !do.enabled {
 		return
 	}
 
