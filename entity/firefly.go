@@ -28,7 +28,7 @@ func NewFirefly(x, y float32) *Firefly {
 func (f *Firefly) Update() {
 	angleRad := decToRad(f.angleDec)
 	dirVector := mgl32.Vec2{float32(math.Cos(angleRad)), float32(math.Sin(angleRad))}
-	dirVector = dirVector.Normalize().Mul(0.01)
+	dirVector = dirVector.Normalize().Mul(0.003)
 	*f.position = f.position.Add(dirVector)
 
 	if f.angleDec >= 0 && f.angleDec < 360 {
