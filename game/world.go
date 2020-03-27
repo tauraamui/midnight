@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"image/color"
+	"math/rand"
 	"strings"
 
 	"github.com/faiface/pixel"
@@ -47,15 +48,19 @@ func NewWorld() *World {
 		Bunny:  entity.NewBunny(SCALE),
 		Clock:  NewWorldClock(),
 
-		fireflies: []entity.Entity{
-			entity.NewFirefly(0.5, 0.5),
-		},
+		fireflies:             []entity.Entity{},
 		ambientLightIntensity: new(float32),
 		shaderCamPos:          &mgl32.Vec2{},
 
 		camPos: pixel.ZV,
 		shader: shader.New("/assets/shader/nighttime.glsl"),
 	}
+
+	for i := 0; i < 100; i++ {
+		pos := mgl32.Vec2{rand.Float32(), rand.Float32()}
+		world.fireflies = append(world.fireflies, entity.NewFirefly(pos.X(), pos.Y()))
+	}
+
 	world.loadSprites()
 
 	world.shader.StrReplaceCallbacks = append(world.shader.StrReplaceCallbacks, func(src string) string {

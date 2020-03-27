@@ -12,8 +12,8 @@ uniform float ambientLightIntensity;
 //FIREFLY_POSITION_UNIFORMS
 
 float attenConst = 1.0;
-float attenLinear = 50.4;
-float attenQuadratic = 129.6;
+float attenLinear = 504;
+float attenQuadratic = 1296;
 
 vec3 ambientLightColor = vec3(1.0, 1.0, 1.0);
 vec3 spotLightColor = vec3(0.7137, 0.8431, 0.0588);

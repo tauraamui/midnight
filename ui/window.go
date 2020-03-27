@@ -106,7 +106,7 @@ func (w *Window) SetShader(s *shader.Shader) {
 	}
 
 	for name, uniRef := range w.shader.Uniforms {
-		fmt.Printf("Setting uniform %s: %#v\n", name, uniRef)
+		// fmt.Printf("Setting uniform %s: %#v\n", name, uniRef)
 		w.shaderCanvas.SetUniform(name, uniRef)
 	}
 

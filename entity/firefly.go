@@ -11,25 +11,35 @@ type Firefly struct {
 
 	progressiveCurve float32
 	position         *mgl32.Vec2
-	angleRad         float64
-	angleIncrementor float64
+	angleDec         float32
+	angleIncr        float32
 }
 
 func NewFirefly(x, y float32) *Firefly {
 	f := &Firefly{
-		Render:           true,
-		position:         &mgl32.Vec2{x, y},
-		angleRad:         0,
-		angleIncrementor: 0,
+		Render:    true,
+		position:  &mgl32.Vec2{x, y},
+		angleDec:  0,
+		angleIncr: 10,
 	}
 	return f
 }
 
 func (f *Firefly) Update() {
-	dirVector := mgl32.Vec2{float32(math.Cos(f.angleRad)), float32(math.Sin(f.angleRad))}
-	dirVector = dirVector.Normalize().Mul(0.001)
+	angleRad := decToRad(f.angleDec)
+	dirVector := mgl32.Vec2{float32(math.Cos(angleRad)), float32(math.Sin(angleRad))}
+	dirVector = dirVector.Normalize().Mul(0.01)
 	*f.position = f.position.Add(dirVector)
-	f.angleRad += f.angleIncrementor
+
+	if f.angleDec >= 0 && f.angleDec < 360 {
+		f.angleIncr *= -1
+	}
+
+	if f.angleDec > 360 {
+		f.angleDec = 0
+	}
+
+	f.angleDec += f.angleIncr
 }
 
 func (f *Firefly) Pos() *mgl32.Vec2 {
@@ -38,4 +48,8 @@ func (f *Firefly) Pos() *mgl32.Vec2 {
 
 func (f *Firefly) UniformName() string {
 	return "fireflyPositions"
+}
+
+func decToRad(dec float32) float64 {
+	return float64(dec * (math.Pi / 180))
 }
