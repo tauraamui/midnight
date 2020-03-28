@@ -42,6 +42,7 @@ func makeGLWindow() *pixelgl.Window {
 		pixelgl.WindowConfig{
 			Title:  "Midnight",
 			Bounds: pixel.R(0, 0, float64(WIN_WIDTH), float64(WIN_HEIGHT)),
+			VSync:  true,
 		},
 	)
 	if err != nil {
