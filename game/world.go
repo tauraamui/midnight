@@ -111,12 +111,11 @@ func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
 
 	dbg.SetMatrix(w.Camera)
 	dbg.Color = pixel.RGB(1, 0, 0)
-	dbg.Push(pixel.V(200, 100))
-	dbg.Color = pixel.RGB(0, 1, 0)
-	dbg.Push(pixel.V(800, 100))
-	dbg.Color = pixel.RGB(0, 0, 1)
-	dbg.Push(pixel.V(500, 700))
-	dbg.Polygon(0)
+	firstFireflyPos := w.fireflies[0].Pos()
+	secondFireflyPos := w.fireflies[1].Pos()
+	dbg.Push(pixel.V(float64(firstFireflyPos.X()), float64(firstFireflyPos.Y())))
+	dbg.Push(pixel.V(float64(secondFireflyPos.X()), float64(secondFireflyPos.Y())))
+	dbg.Line(1)
 }
 
 func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {
