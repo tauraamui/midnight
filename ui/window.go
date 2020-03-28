@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/tauraamui/midnight/ui/debug"
 	"github.com/tauraamui/midnight/ui/input"
@@ -45,7 +46,6 @@ func NewWindow(win *pixelgl.Window, scale float64) *Window {
 
 func (w *Window) Update(currentFPS, currentFramesInSecond int, updateDuration time.Duration) *input.Gamepad {
 	w.FPS = currentFPS
-	w.root.UpdateInput()
 
 	if w.root.JustPressed(pixelgl.KeyEscape) {
 		w.closing = true
@@ -63,7 +63,7 @@ func (w *Window) Update(currentFPS, currentFramesInSecond int, updateDuration ti
 	return w.input
 }
 
-func (w *Window) Draw(worldDraw func(*pixelgl.Canvas)) {
+func (w *Window) Draw(worldDraw func(*pixelgl.Canvas, *imdraw.IMDraw)) {
 	beforeWorldAndShaderDraw := time.Now()
 	w.root.Clear(colornames.Black)
 
@@ -72,7 +72,7 @@ func (w *Window) Draw(worldDraw func(*pixelgl.Canvas)) {
 	w.shaderCanvas.Clear(colornames.Lightgray)
 
 	// render world onto own canvas
-	worldDraw(w.worldCanvas)
+	worldDraw(w.worldCanvas, w.overlay.DrawingCanvas)
 	// paint world canvas onto shader canvas to apply current shader
 	w.worldCanvas.Draw(w.shaderCanvas, pixel.IM.Moved(w.root.Bounds().Center()))
 
