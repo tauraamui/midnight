@@ -6,6 +6,7 @@ import (
 	"unicode"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"github.com/golang/freetype/truetype"
@@ -21,6 +22,7 @@ const (
 )
 
 type DebugOverlay struct {
+	DrawingCanvas       *imdraw.IMDraw
 	perfGraph           *Graph
 	fpsText             *text.Text
 	gamepadAxisListText *text.Text
@@ -35,18 +37,19 @@ type DebugOverlay struct {
 func NewDebugOverlay(win *pixelgl.Window) *DebugOverlay {
 	ttf := ttfFromBytesMust(goregular.TTF, SCALE*8)
 	return &DebugOverlay{
-		perfGraph: NewGraph(win),
-
-		enabled:             false,
+		perfGraph:           NewGraph(win),
 		fpsText:             text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 		gamepadAxisListText: text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 		perfNumbersText:     text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
 		worldClockText:      text.New(pixel.ZV, text.NewAtlas(ttf, text.ASCII, text.RangeTable(unicode.Latin))),
+		DrawingCanvas:       imdraw.New(nil),
+
+		enabled: false,
 	}
 }
 
 func (do *DebugOverlay) Update(win *pixelgl.Window, frames int, fsToggled bool) {
-	if win.JustReleased(pixelgl.KeyX) {
+	if win.JustPressed(pixelgl.KeyX) {
 		do.enabled = !do.enabled
 		if !do.enabled {
 			do.fpsText.Clear()
@@ -83,6 +86,8 @@ func (do *DebugOverlay) Draw(win *pixelgl.Canvas, gp *input.Gamepad, fps int) {
 		return
 	}
 
+	do.DrawingCanvas.Draw(win)
+
 	win.SetMatrix(pixel.IM)
 
 	do.perfGraph.Draw(win)
@@ -107,6 +112,8 @@ func (do *DebugOverlay) Draw(win *pixelgl.Canvas, gp *input.Gamepad, fps int) {
 	do.gamepadAxisListText.Draw(win, pixel.IM.Scaled(
 		pixel.ZV, DEBUG_TEXT_SCALE,
 	).Moved(pixel.V(15, 10*DEBUG_TEXT_SCALE)))
+
+	do.DrawingCanvas.Clear()
 
 	// do.worldClockText.Clear()
 	// _, err = do.worldClockText.WriteString(c.Current.String())

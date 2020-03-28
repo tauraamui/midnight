@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/markbates/pkger"
@@ -93,7 +94,7 @@ func (w *World) Update(gp *input.Gamepad, dt float64) *shader.Shader {
 	return w.shader
 }
 
-func (w *World) Draw(win *pixelgl.Canvas) {
+func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
