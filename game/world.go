@@ -98,17 +98,25 @@ func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
-	win.SetMatrix(w.Camera)
 
+	win.SetMatrix(w.Camera)
 	w.batch.Draw(win)
 
-	w.Camera = pixel.IM
-	win.SetMatrix(w.Camera)
+	win.SetMatrix(pixel.IM)
 	w.Bunny.Draw(
 		win,
 		w.currentVelocity,
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
+
+	dbg.SetMatrix(w.Camera)
+	dbg.Color = pixel.RGB(1, 0, 0)
+	dbg.Push(pixel.V(200, 100))
+	dbg.Color = pixel.RGB(0, 1, 0)
+	dbg.Push(pixel.V(800, 100))
+	dbg.Color = pixel.RGB(0, 0, 1)
+	dbg.Push(pixel.V(500, 700))
+	dbg.Polygon(0)
 }
 
 func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {
