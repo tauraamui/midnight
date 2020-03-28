@@ -33,7 +33,7 @@ func (f *Firefly) Update() {
 	f.updateDir()
 	angleRad := decToRad(f.angleDec)
 	dirVector := mgl32.Vec2{float32(math.Cos(angleRad)), float32(math.Sin(angleRad))}
-	dirVector = dirVector.Normalize().Mul(0.0013)
+	dirVector = dirVector.Normalize().Mul(0.000013)
 	*f.position = f.position.Add(dirVector)
 }
 

@@ -98,6 +98,8 @@ func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
+	// fmt.Printf("CANVAS CAM POS: %v\n", w.camPos)
+	// fmt.Printf("SHADER CAM POS: %v\n", w.shaderCamPos)
 
 	win.SetMatrix(w.Camera)
 	w.batch.Draw(win)
@@ -116,6 +118,14 @@ func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
 	dbg.Push(pixel.V(float64(firstFireflyPos.X()), float64(firstFireflyPos.Y())))
 	dbg.Push(pixel.V(float64(secondFireflyPos.X()), float64(secondFireflyPos.Y())))
 	dbg.Line(1)
+
+	dbg.Color = pixel.RGB(0.3, 0.5, 0.9)
+	dbg.Push(pixel.V(float64(w.shaderCamPos.X()), float64(w.shaderCamPos.Y())))
+	dbg.Circle(10, 3)
+
+	dbg.Color = pixel.RGB(0.8, 0.5, 0.3)
+	dbg.Push(w.camPos)
+	dbg.Circle(10, 3)
 }
 
 func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {

@@ -11,7 +11,7 @@ uniform float ambientLightIntensity;
 
 //FIREFLY_POSITION_UNIFORMS
 
-float attenConst = 1.0;
+float attenConst = 0.3;
 float attenLinear = 504;
 float attenQuadratic = 1296;
 
