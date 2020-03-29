@@ -27,7 +27,7 @@ func NewFirefly(x, y float32) *Firefly {
 	f := &Firefly{
 		Render:    true,
 		position:  &mgl32.Vec2{x, y},
-		angleDec:  0,
+		angleDec:  200,
 		angleIncr: 1,
 	}
 	return f
