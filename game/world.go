@@ -121,7 +121,7 @@ func (w *World) Draw(
 	)
 
 	w.copyCanvas.Clear(pixel.RGB(0, 0, 0))
-	w.copyCanvas.SetColorMask(pixel.RGBA{R: 0, G: 0, B: 0, A: 0.401})
+	w.copyCanvas.SetColorMask(pixel.Alpha(0.4))
 	w.copyCanvas.SetComposeMethod(pixel.ComposePlus)
 	win.Draw(w.copyCanvas, pixel.IM.Moved(win.Bounds().Center()))
 
