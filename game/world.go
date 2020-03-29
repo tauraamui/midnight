@@ -30,12 +30,13 @@ type World struct {
 	Bunny  *entity.Bunny
 	Clock  *WorldClock
 
-	fireflies             []entity.Entity
-	ambientLightIntensity *float32
-	shaderCamPos          *mgl32.Vec2
+	fireflies []entity.Entity
 
 	camPos                             pixel.Vec
 	spriteSheet                        pixel.Picture
+	copyCanvas                         *pixelgl.Canvas
+	ambientLightIntensity              *float32
+	shaderCamPos                       *mgl32.Vec2
 	shader                             *shader.Shader
 	batch                              *pixel.Batch
 	grassTiles                         []*pixel.Sprite
@@ -100,7 +101,9 @@ func (w *World) Draw(
 	singleLight *pixelgl.Canvas,
 	dbg *imdraw.IMDraw,
 ) {
-
+	if w.copyCanvas == nil || w.copyCanvas.Bounds() != win.Bounds() {
+		w.copyCanvas = pixelgl.NewCanvas(win.Bounds())
+	}
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
@@ -117,18 +120,12 @@ func (w *World) Draw(
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
 
-	lights.Clear(pixel.Alpha(0))
-	lights.SetComposeMethod(pixel.ComposePlus)
-	for _, f := range w.fireflies {
-		singleLight.Clear(pixel.Alpha(0))
-		f.Draw(singleLight)
-		singleLight.SetMatrix(w.Camera)
-		singleLight.Draw(lights, pixel.IM.Moved(win.Bounds().Center()))
-	}
-	win.SetComposeMethod(pixel.ComposePlus)
-	win.SetColorMask(pixel.Alpha(1))
-	lights.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
-	win.SetComposeMethod(pixel.ComposeAtop)
+	w.copyCanvas.Clear(pixel.RGB(0, 0, 0))
+	w.copyCanvas.SetColorMask(pixel.RGBA{R: 0, G: 0, B: 0, A: 0.401})
+	w.copyCanvas.SetComposeMethod(pixel.ComposePlus)
+	win.Draw(w.copyCanvas, pixel.IM.Moved(win.Bounds().Center()))
+
+	w.copyCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
 	dbg.SetMatrix(w.Camera)
 	dbg.Color = pixel.RGB(1, 0, 0)
