@@ -117,13 +117,13 @@ func (w *World) Draw(
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
 
-	lights.SetMatrix(w.Camera)
 	lights.Clear(pixel.Alpha(0))
 	lights.SetComposeMethod(pixel.ComposePlus)
 	for _, f := range w.fireflies {
 		singleLight.Clear(pixel.Alpha(0))
 		f.Draw(singleLight)
-		singleLight.Draw(lights, pixel.IM.Moved(lights.Bounds().Center()))
+		singleLight.SetMatrix(w.Camera)
+		singleLight.Draw(lights, pixel.IM.Moved(win.Bounds().Center()))
 	}
 	win.SetComposeMethod(pixel.ComposePlus)
 	win.SetColorMask(pixel.Alpha(1))
