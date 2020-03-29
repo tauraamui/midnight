@@ -9,7 +9,7 @@ uniform sampler2D uTexture;
 uniform vec2 camPos;
 uniform float ambientLightIntensity;
 
-//FIREFLY_POSITION_UNIFORMS
+// FIREFLY_POSITION_UNIFORMS
 
 float attenConst = 0.3;
 float attenLinear = 504;
@@ -33,9 +33,9 @@ void main() {
 
 	vec3 ambColor = ambientLight;
 
-	for (int i = 0; i < fireflyPositions.length(); i++) {
-		ambColor += getLightAtten(fireflyPositions[i], t) * spotLightColor;
-	}
+	// for (int i = 0; i < fireflyPositions.length(); i++) {
+	// 	ambColor += getLightAtten(fireflyPositions[i], t) * spotLightColor;
+	// }
 
 	ambColor = ambColor * tColor;
 	// vec3 ambColor = (ambientLight + pointlightLight) * tColor;
