@@ -36,6 +36,8 @@ type World struct {
 
 	camPos                             pixel.Vec
 	spriteSheet                        pixel.Picture
+	singleLightCanvas                  *pixelgl.Canvas
+	allLightsCanvas                    *pixelgl.Canvas
 	shader                             *shader.Shader
 	batch                              *pixel.Batch
 	grassTiles                         []*pixel.Sprite
@@ -58,7 +60,7 @@ func NewWorld() *World {
 	}
 
 	for i := 0; i < 3; i++ {
-		pos := mgl32.Vec2{rand.Float32(), rand.Float32()}
+		pos := mgl32.Vec2{rand.Float32() * 500, rand.Float32() * 500}
 		world.fireflies = append(world.fireflies, entity.NewFirefly(pos.X(), pos.Y()))
 	}
 
@@ -95,6 +97,14 @@ func (w *World) Update(gp *input.Gamepad, dt float64) *shader.Shader {
 }
 
 func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
+	if w.allLightsCanvas == nil {
+		w.allLightsCanvas = pixelgl.NewCanvas(win.Bounds())
+	}
+
+	if w.singleLightCanvas == nil {
+		w.singleLightCanvas = pixelgl.NewCanvas(win.Bounds())
+	}
+
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
@@ -110,6 +120,18 @@ func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
 		w.currentVelocity,
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
+
+	w.allLightsCanvas.SetMatrix(w.Camera)
+	w.allLightsCanvas.Clear(pixel.Alpha(0))
+	for _, f := range w.fireflies {
+		w.singleLightCanvas.Clear(pixel.Alpha(0))
+		f.Draw(w.singleLightCanvas)
+		w.singleLightCanvas.Draw(w.allLightsCanvas, pixel.IM.Moved(w.allLightsCanvas.Bounds().Center()))
+	}
+	win.SetComposeMethod(pixel.ComposePlus)
+	w.allLightsCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+
+	win.SetComposeMethod(pixel.ComposeAtop)
 
 	dbg.SetMatrix(w.Camera)
 	dbg.Color = pixel.RGB(1, 0, 0)
@@ -160,6 +182,11 @@ func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {
 		w.camPos.Y -= w.currentVelocity
 	}
 
+}
+
+func (w *World) ScreenSizeChanged() {
+	w.allLightsCanvas = nil
+	w.singleLightCanvas = nil
 }
 
 func (w *World) updateShader() {

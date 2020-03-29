@@ -4,6 +4,9 @@ import (
 	"math"
 
 	"github.com/MichaelTJones/pcg"
+	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
+	"github.com/faiface/pixel/pixelgl"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -12,8 +15,9 @@ var pcg32 = pcg.NewPCG32()
 type Firefly struct {
 	Render bool
 
-	progressiveCurve        float32
+	imd                     *imdraw.IMDraw
 	position                *mgl32.Vec2
+	progressiveCurve        float32
 	angleDec                float32
 	angleIncr               float32
 	angleDiffSinceDirChange float32
@@ -33,8 +37,21 @@ func (f *Firefly) Update() {
 	f.updateDir()
 	angleRad := decToRad(f.angleDec)
 	dirVector := mgl32.Vec2{float32(math.Cos(angleRad)), float32(math.Sin(angleRad))}
-	dirVector = dirVector.Normalize().Mul(0.000013)
+	dirVector = dirVector.Normalize().Mul(0.1)
 	*f.position = f.position.Add(dirVector)
+}
+
+func (f *Firefly) Draw(win *pixelgl.Canvas) {
+	if f.imd == nil {
+		imd := imdraw.New(nil)
+		imd.Color = pixel.RGB(1, 0, 0)
+		f.imd = imd
+	}
+
+	f.imd.Clear()
+	f.imd.Push(pixel.V(float64(f.position.X()), float64(f.position.Y())))
+	f.imd.Circle(30, 0)
+	f.imd.Draw(win)
 }
 
 func (f *Firefly) Pos() *mgl32.Vec2 {
