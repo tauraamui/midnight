@@ -21,13 +21,15 @@ type Window struct {
 	fullscreen bool
 	closing    bool
 
-	root         *pixelgl.Window
-	input        *input.Gamepad
-	overlay      *debug.DebugOverlay
-	worldCanvas  *pixelgl.Canvas
-	debugCanvas  *pixelgl.Canvas
-	shaderCanvas *pixelgl.Canvas
-	shader       *shader.Shader
+	root              *pixelgl.Window
+	input             *input.Gamepad
+	overlay           *debug.DebugOverlay
+	worldCanvas       *pixelgl.Canvas
+	debugCanvas       *pixelgl.Canvas
+	singleLightCanvas *pixelgl.Canvas
+	lightsCanvas      *pixelgl.Canvas
+	shaderCanvas      *pixelgl.Canvas
+	shader            *shader.Shader
 }
 
 func NewWindow(win *pixelgl.Window, scale float64) *Window {
@@ -38,9 +40,11 @@ func NewWindow(win *pixelgl.Window, scale float64) *Window {
 		input:   input.NewGamepad(win),
 		overlay: debug.NewDebugOverlay(win),
 
-		worldCanvas:  pixelgl.NewCanvas(win.Bounds()),
-		debugCanvas:  pixelgl.NewCanvas(win.Bounds()),
-		shaderCanvas: pixelgl.NewCanvas(win.Bounds()),
+		worldCanvas:       pixelgl.NewCanvas(win.Bounds()),
+		debugCanvas:       pixelgl.NewCanvas(win.Bounds()),
+		lightsCanvas:      pixelgl.NewCanvas(win.Bounds()),
+		singleLightCanvas: pixelgl.NewCanvas(win.Bounds()),
+		shaderCanvas:      pixelgl.NewCanvas(win.Bounds()),
 	}
 }
 
@@ -63,7 +67,9 @@ func (w *Window) Update(currentFPS, currentFramesInSecond int, updateDuration ti
 	return w.input
 }
 
-func (w *Window) Draw(worldDraw func(*pixelgl.Canvas, *imdraw.IMDraw)) {
+func (w *Window) Draw(worldDraw func(
+	*pixelgl.Canvas, *pixelgl.Canvas, *pixelgl.Canvas, *imdraw.IMDraw,
+)) {
 	beforeWorldAndShaderDraw := time.Now()
 	w.root.Clear(colornames.Black)
 
@@ -72,7 +78,7 @@ func (w *Window) Draw(worldDraw func(*pixelgl.Canvas, *imdraw.IMDraw)) {
 	w.shaderCanvas.Clear(colornames.Lightgray)
 
 	// render world onto own canvas
-	worldDraw(w.worldCanvas, w.overlay.DrawingCanvas)
+	worldDraw(w.worldCanvas, w.lightsCanvas, w.singleLightCanvas, w.overlay.DrawingCanvas)
 	// paint world canvas onto shader canvas to apply current shader
 	w.worldCanvas.Draw(w.shaderCanvas, pixel.IM.Moved(w.root.Bounds().Center()))
 
@@ -122,6 +128,8 @@ func (w *Window) toggleFullscreen() {
 		w.root.Update()
 		w.worldCanvas.SetBounds(w.root.Canvas().Bounds())
 		w.debugCanvas.SetBounds(w.root.Canvas().Bounds())
+		w.lightsCanvas.SetBounds(w.root.Canvas().Bounds())
+		w.singleLightCanvas.SetBounds(w.root.Canvas().Bounds())
 		w.shaderCanvas.SetBounds(w.root.Canvas().Bounds())
 	}()
 	w.fullscreen = !w.fullscreen

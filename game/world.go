@@ -36,8 +36,6 @@ type World struct {
 
 	camPos                             pixel.Vec
 	spriteSheet                        pixel.Picture
-	singleLightCanvas                  *pixelgl.Canvas
-	allLightsCanvas                    *pixelgl.Canvas
 	shader                             *shader.Shader
 	batch                              *pixel.Batch
 	grassTiles                         []*pixel.Sprite
@@ -96,14 +94,12 @@ func (w *World) Update(gp *input.Gamepad, dt float64) *shader.Shader {
 	return w.shader
 }
 
-func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
-	if w.allLightsCanvas == nil {
-		w.allLightsCanvas = pixelgl.NewCanvas(win.Bounds())
-	}
-
-	if w.singleLightCanvas == nil {
-		w.singleLightCanvas = pixelgl.NewCanvas(win.Bounds())
-	}
+func (w *World) Draw(
+	win *pixelgl.Canvas,
+	lights *pixelgl.Canvas,
+	singleLight *pixelgl.Canvas,
+	dbg *imdraw.IMDraw,
+) {
 
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
@@ -121,24 +117,32 @@ func (w *World) Draw(win *pixelgl.Canvas, dbg *imdraw.IMDraw) {
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
 
-	w.allLightsCanvas.SetMatrix(w.Camera)
-	w.allLightsCanvas.Clear(pixel.Alpha(0))
+	lights.SetMatrix(w.Camera)
+	lights.Clear(pixel.Alpha(0))
+	lights.SetComposeMethod(pixel.ComposePlus)
 	for _, f := range w.fireflies {
-		w.singleLightCanvas.Clear(pixel.Alpha(0))
-		f.Draw(w.singleLightCanvas)
-		w.singleLightCanvas.Draw(w.allLightsCanvas, pixel.IM.Moved(w.allLightsCanvas.Bounds().Center()))
+		singleLight.Clear(pixel.Alpha(0))
+		f.Draw(singleLight)
+		singleLight.Draw(lights, pixel.IM.Moved(lights.Bounds().Center()))
 	}
 	win.SetComposeMethod(pixel.ComposePlus)
-	w.allLightsCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
-
+	win.SetColorMask(pixel.Alpha(1))
+	lights.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 	win.SetComposeMethod(pixel.ComposeAtop)
 
 	dbg.SetMatrix(w.Camera)
 	dbg.Color = pixel.RGB(1, 0, 0)
-	firstFireflyPos := w.fireflies[0].Pos()
-	secondFireflyPos := w.fireflies[1].Pos()
-	dbg.Push(pixel.V(float64(firstFireflyPos.X()), float64(firstFireflyPos.Y())))
-	dbg.Push(pixel.V(float64(secondFireflyPos.X()), float64(secondFireflyPos.Y())))
+
+	dbg.Push(pixel.V(float64(w.fireflies[0].Pos().X()), float64(w.fireflies[0].Pos().Y())))
+	dbg.Push(pixel.V(float64(w.fireflies[1].Pos().X()), float64(w.fireflies[1].Pos().Y())))
+	dbg.Line(1)
+
+	dbg.Push(pixel.V(float64(w.fireflies[0].Pos().X()), float64(w.fireflies[0].Pos().Y())))
+	dbg.Push(pixel.V(float64(w.fireflies[2].Pos().X()), float64(w.fireflies[2].Pos().Y())))
+	dbg.Line(1)
+
+	dbg.Push(pixel.V(float64(w.fireflies[1].Pos().X()), float64(w.fireflies[1].Pos().Y())))
+	dbg.Push(pixel.V(float64(w.fireflies[2].Pos().X()), float64(w.fireflies[2].Pos().Y())))
 	dbg.Line(1)
 
 	dbg.Color = pixel.RGB(0.3, 0.5, 0.9)
@@ -182,11 +186,6 @@ func (w *World) updateCamPos(gp *input.Gamepad, dt float64) {
 		w.camPos.Y -= w.currentVelocity
 	}
 
-}
-
-func (w *World) ScreenSizeChanged() {
-	w.allLightsCanvas = nil
-	w.singleLightCanvas = nil
 }
 
 func (w *World) updateShader() {
