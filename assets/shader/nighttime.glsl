@@ -28,16 +28,16 @@ void main() {
 	vec2 t = (vTexCoords - uTexBounds.xy) / uTexBounds.zw;
 	vec3 tColor = texture(uTexture, t).rgb;
 
-	vec3 ambientLight = (ambientLightIntensity * ambientLightColor);
+	// vec3 ambientLight = (ambientLightIntensity * ambientLightColor);
 	// vec3 pointlightLight = (getLightAtten(fireflyPositions[0], t) * spotLightColor);
 
-	vec3 ambColor = ambientLight;
+	// vec3 ambColor = ambientLight;
 
 	// for (int i = 0; i < fireflyPositions.length(); i++) {
 	// 	ambColor += getLightAtten(fireflyPositions[i], t) * spotLightColor;
 	// }
 
-	ambColor = ambColor * tColor;
+	// ambColor = ambColor * tColor;
 	// vec3 ambColor = (ambientLight + pointlightLight) * tColor;
-	fragColor = vec4(ambColor, 1.0);
+	fragColor = vec4(tColor, 1.0);
 }
