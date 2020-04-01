@@ -53,7 +53,7 @@ func (g *Graph) Draw(win *pixelgl.Canvas) {
 	}
 	g.imd.SetMatrix(pixel.IM.Moved(pixel.V(win.Bounds().W()-g.w, win.Bounds().H()-g.h)))
 	g.imd.Clear()
-	g.imd.Color = colornames.Gray
+	g.imd.Color = pixel.RGB(0.03, 0.03, 0.03)
 	g.imd.Push(pixel.ZV)
 	g.imd.Push(pixel.V(g.w, g.h))
 	g.imd.Rectangle(0)
