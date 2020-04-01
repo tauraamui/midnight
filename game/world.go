@@ -34,7 +34,8 @@ type World struct {
 
 	camPos                             pixel.Vec
 	spriteSheet                        pixel.Picture
-	copyCanvas                         *pixelgl.Canvas
+	worldCopyCanvas                    *pixelgl.Canvas
+	maskCopyCanvas                     *pixelgl.Canvas
 	ambientLightIntensity              *float32
 	shaderCamPos                       *mgl32.Vec2
 	shader                             *shader.Shader
@@ -101,9 +102,14 @@ func (w *World) Draw(
 	singleLight *pixelgl.Canvas,
 	dbg *imdraw.IMDraw,
 ) {
-	if w.copyCanvas == nil || w.copyCanvas.Bounds() != win.Bounds() {
-		w.copyCanvas = pixelgl.NewCanvas(win.Bounds())
+	if w.maskCopyCanvas == nil || w.maskCopyCanvas.Bounds() != win.Bounds() {
+		w.maskCopyCanvas = pixelgl.NewCanvas(win.Bounds())
 	}
+
+	if w.worldCopyCanvas == nil || w.worldCopyCanvas.Bounds() != win.Bounds() {
+		w.worldCopyCanvas = pixelgl.NewCanvas(win.Bounds())
+	}
+
 	win.Clear(color.RGBA{R: 110, G: 201, B: 57, A: 255})
 	*w.shaderCamPos = mgl32.Vec2{float32(w.camPos.X) / float32(win.Bounds().Norm().W()/SCALE), float32(w.camPos.Y) / float32(win.Bounds().Norm().H()/SCALE)}
 	w.Camera = pixel.IM.Scaled(w.camPos, SCALE).Moved(win.Bounds().Center().Sub(w.camPos))
@@ -120,12 +126,18 @@ func (w *World) Draw(
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
 
-	w.copyCanvas.Clear(pixel.RGB(0, 0, 0))
-	w.copyCanvas.SetColorMask(pixel.RGB(0, 0, 0).Mul(pixel.Alpha(0.41)))
-	w.copyCanvas.SetComposeMethod(pixel.ComposePlus)
-	win.Draw(w.copyCanvas, pixel.IM.Moved(win.Bounds().Center()))
+	// clone world canvas unchanged
+	// w.worldCopyCanvas.Clear(pixel.RGB(0, 0, 0))
+	// win.Draw(w.worldCopyCanvas, pixel.IM.Moved(win.Bounds().Center()))
 
-	w.copyCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+	w.maskCopyCanvas.Clear(pixel.RGB(0, 0, 0))
+	w.maskCopyCanvas.SetColorMask(pixel.RGB(0, 0, 0).Mul(pixel.Alpha(0.41)))
+	w.maskCopyCanvas.SetComposeMethod(pixel.ComposePlus)
+	win.Draw(w.maskCopyCanvas, pixel.IM.Moved(win.Bounds().Center()))
+
+	lights.Clear(pixel.Alpha(0))
+
+	w.maskCopyCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
 	dbg.SetMatrix(w.Camera)
 	dbg.Color = pixel.RGB(1, 0, 0)
