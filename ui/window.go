@@ -148,7 +148,6 @@ func (w *Window) toggleFullscreen() {
 
 func getMonitor() *pixelgl.Monitor {
 	for _, mon := range pixelgl.Monitors() {
-		println(mon.Name())
 		if mon.Name() == "50UHD_LCD_TV" {
 			return mon
 		}
