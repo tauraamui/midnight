@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"time"
 
 	_ "image/png"
@@ -16,9 +17,12 @@ const (
 )
 
 func run() {
+	fullscreenFlag := flag.Bool("fullscreen", false, "Open game fullscreen on load")
+	flag.Parse()
+
 	fps := time.Tick(time.Second / 60)
 	second := time.Tick(time.Second)
-	game := game.NewInstance(makeGLWindow())
+	game := game.NewInstance(makeGLWindow(), fullscreenFlag)
 
 	framesInSecond := 0
 	for !game.Exiting() {

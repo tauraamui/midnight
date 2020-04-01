@@ -32,10 +32,10 @@ type Window struct {
 	shader            *shader.Shader
 }
 
-func NewWindow(win *pixelgl.Window, scale float64) *Window {
+func NewWindow(win *pixelgl.Window, scale float64, fullscreen bool) *Window {
 	SCALE = scale
 	debug.SCALE = SCALE
-	return &Window{
+	inst := Window{
 		root:    win,
 		input:   input.NewGamepad(win),
 		overlay: debug.NewDebugOverlay(win),
@@ -46,6 +46,12 @@ func NewWindow(win *pixelgl.Window, scale float64) *Window {
 		singleLightCanvas: pixelgl.NewCanvas(win.Bounds()),
 		shaderCanvas:      pixelgl.NewCanvas(win.Bounds()),
 	}
+
+	if fullscreen {
+		inst.toggleFullscreen()
+	}
+
+	return &inst
 }
 
 func (w *Window) Update(currentFPS, currentFramesInSecond int, updateDuration time.Duration) *input.Gamepad {

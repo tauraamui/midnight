@@ -1,8 +1,9 @@
 package game
 
 import (
-	"github.com/tauraamui/midnight/ui/shader"
 	"time"
+
+	"github.com/tauraamui/midnight/ui/shader"
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/tauraamui/midnight/ui"
@@ -21,9 +22,9 @@ type Instance struct {
 	updateDuration          time.Duration
 }
 
-func NewInstance(win *pixelgl.Window) *Instance {
+func NewInstance(win *pixelgl.Window, fullscreen *bool) *Instance {
 	return &Instance{
-		window: ui.NewWindow(win, SCALE),
+		window: ui.NewWindow(win, SCALE, *fullscreen),
 		world:  NewWorld(),
 
 		lastDelta: time.Now(),
