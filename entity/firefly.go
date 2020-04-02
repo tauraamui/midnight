@@ -44,12 +44,14 @@ func (f *Firefly) Update() {
 func (f *Firefly) Draw(win *pixelgl.Canvas) {
 	if f.imd == nil {
 		imd := imdraw.New(nil)
-		imd.Color = pixel.RGB(1, 0, 0)
+		// imd.Color = pixel.RGB(1, 0, 0)
 		imd.Push(pixel.ZV)
-		imd.Circle(30, 0)
+		imd.Circle(60, 0)
 		f.imd = imd
 	}
 
+	win.SetColorMask(pixel.Alpha(1))
+	win.SetComposeMethod(pixel.ComposeOut)
 	f.imd.Draw(win)
 }
 
