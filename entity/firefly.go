@@ -41,16 +41,15 @@ func (f *Firefly) Update() {
 	*f.position = f.position.Add(dirVector)
 }
 
-func (f *Firefly) Draw(win *pixelgl.Canvas) {
+func (f *Firefly) Draw(win *pixelgl.Canvas, camPos pixel.Vec) {
 	if f.imd == nil {
 		imd := imdraw.New(nil)
 		imd.Color = pixel.RGB(1, 0, 0)
+		imd.Push(pixel.ZV)
+		imd.Circle(30, 0)
 		f.imd = imd
 	}
 
-	f.imd.Clear()
-	f.imd.Push(pixel.V(float64(f.position.X()), float64(f.position.Y())))
-	f.imd.Circle(30, 0)
 	f.imd.Draw(win)
 }
 
