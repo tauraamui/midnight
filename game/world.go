@@ -129,9 +129,8 @@ func (w *World) Draw(
 	lights.Clear(pixel.RGB(0, 0, 0).Mul(pixel.Alpha(1)))
 	for _, f := range w.fireflies {
 		lights.SetMatrix(pixel.IM.Moved(w.Camera.Project(pixel.V(float64(f.Pos().X()), float64(f.Pos().Y())))))
-		f.Draw(lights, w.camPos)
+		f.Draw(lights)
 	}
-	// win.SetMatrix(w.Camera)
 	lights.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
 	dbg.SetMatrix(w.Camera)
