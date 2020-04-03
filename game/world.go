@@ -128,11 +128,11 @@ func (w *World) Draw(
 
 	win.Draw(w.worldCopyCanvas, pixel.IM.Moved(w.worldCopyCanvas.Bounds().Center()))
 
-	lights.Clear(pixel.RGB(0, 0, 0).Mul(pixel.Alpha(0.85)))
-	lights.SetComposeMethod(pixel.ComposePlus)
+	lights.Clear(pixel.RGB(0, 0, 0).Mul(pixel.Alpha(0.9)))
 	for _, f := range w.fireflies {
-		lights.SetMatrix(pixel.IM.Moved(w.Camera.Project(pixel.V(float64(f.Pos().X()), float64(f.Pos().Y())))))
-		f.Draw(lights)
+		// lights.SetMatrix(pixel.IM)
+		// lights.SetMatrix(pixel.IM.Moved(w.Camera.Project(pixel.V(float64(f.Pos().X()), float64(f.Pos().Y())))))
+		f.Draw(lights, w.Camera)
 	}
 	lights.Draw(w.worldCopyCanvas, pixel.IM.Moved(w.worldCopyCanvas.Bounds().Center()))
 
