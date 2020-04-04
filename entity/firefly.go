@@ -17,8 +17,8 @@ type Firefly struct {
 
 	imd                     *imdraw.IMDraw
 	position                *mgl32.Vec2
+	resolution              float32
 	spread                  float32
-	progressiveCurve        float32
 	angleDec                float32
 	angleIncr               float32
 	angleDiffSinceDirChange float32
@@ -26,11 +26,12 @@ type Firefly struct {
 
 func NewFirefly(x, y float32) *Firefly {
 	f := &Firefly{
-		Render:    true,
-		position:  &mgl32.Vec2{x, y},
-		spread:    math.Pi / math.E,
-		angleDec:  200,
-		angleIncr: 1,
+		Render:     true,
+		position:   &mgl32.Vec2{x, y},
+		resolution: 64,
+		spread:     2 * math.Pi,
+		angleDec:   200,
+		angleIncr:  1,
 	}
 	return f
 }
@@ -50,7 +51,9 @@ func (f *Firefly) Draw(win *pixelgl.Canvas, mat pixel.Matrix) {
 		imd.Color = pixel.Alpha(1)
 		imd.Push(pixel.ZV)
 		imd.Color = pixel.Alpha(0)
-		for angle := -f.spread / 2; angle <= f.spread/2; angle += f.spread / 64 {
+
+		presicion := f.spread / f.resolution
+		for angle := -f.spread / 2; angle <= f.spread/2+(presicion); angle += presicion {
 			imd.Push(pixel.V(1, 0).Rotated(float64(angle)))
 		}
 		imd.Polygon(0)
@@ -59,7 +62,7 @@ func (f *Firefly) Draw(win *pixelgl.Canvas, mat pixel.Matrix) {
 
 	p := pixel.V(float64(f.position.X()), float64(f.position.Y()))
 	win.SetMatrix(pixel.IM.Scaled(pixel.ZV, 30).Moved(mat.Project(p)))
-	win.SetColorMask(pixel.Alpha(1))
+	// win.SetColorMask(pixel.Alpha(1))
 	win.SetComposeMethod(pixel.ComposeOut)
 	f.imd.Draw(win)
 }
