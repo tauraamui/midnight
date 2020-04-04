@@ -48,10 +48,10 @@ func (f *Firefly) Draw(win *pixelgl.Canvas, mat pixel.Matrix) {
 	if f.imd == nil {
 		imd := imdraw.New(nil)
 		// imd.Color = pixel.RGB(1, 0, 0)
-		imd.Color = pixel.Alpha(1)
+		imd.Color = pixel.RGB(0, 0, 1).Mul(pixel.Alpha(1))
 		imd.Push(pixel.ZV)
-		imd.Color = pixel.Alpha(0)
 
+		imd.Color = pixel.RGB(0, 0, 1).Mul(pixel.Alpha(0.5))
 		presicion := f.spread / f.resolution
 		for angle := -f.spread / 2; angle <= f.spread/2+(presicion); angle += presicion {
 			imd.Push(pixel.V(1, 0).Rotated(float64(angle)))
