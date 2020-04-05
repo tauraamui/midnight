@@ -133,11 +133,11 @@ func (w *World) Draw(
 
 	lights.Clear(pixel.Alpha(0))
 	lights.SetComposeMethod(pixel.ComposePlus)
-	// for _, f := range w.fireflies {
-	// lights.SetMatrix(pixel.IM)
-	// lights.SetMatrix(pixel.IM.Moved(w.Camera.Project(pixel.V(float64(f.Pos().X()), float64(f.Pos().Y())))))
-	// f.Draw(lights, w.Camera)
-	// }
+	for i := range w.fireflies {
+		singleLight.Clear(pixel.Alpha(0))
+		w.fireflies[i].Draw(singleLight, w.Camera, singleLight.Bounds().Center(), win)
+		singleLight.Draw(lights, pixel.IM.Moved(lights.Bounds().Center()))
+	}
 
 	w.worldCopyCanvas.SetColorMask(pixel.Alpha(1))
 	lights.Draw(w.worldCopyCanvas, pixel.IM.Moved(w.worldCopyCanvas.Bounds().Center()))

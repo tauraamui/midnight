@@ -8,7 +8,7 @@ import (
 
 type Entity interface {
 	Update()
-	Draw(*pixelgl.Canvas, pixel.Matrix)
+	Draw(*pixelgl.Canvas, pixel.Matrix, pixel.Vec, *pixelgl.Canvas)
 	Pos() *mgl32.Vec2
 	UniformName() string
 }

@@ -44,7 +44,7 @@ func (f *Firefly) Update() {
 	*f.position = f.position.Add(dirVector)
 }
 
-func (f *Firefly) Draw(win *pixelgl.Canvas, mat pixel.Matrix) {
+func (f *Firefly) Draw(win *pixelgl.Canvas, mat pixel.Matrix, center pixel.Vec, src *pixelgl.Canvas) {
 	if f.imd == nil {
 		imd := imdraw.New(nil)
 		// imd.Color = pixel.RGB(1, 0, 0)
