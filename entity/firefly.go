@@ -29,7 +29,7 @@ func NewFirefly(x, y float32) *Firefly {
 	f := &Firefly{
 		Render:     true,
 		position:   &mgl32.Vec2{x, y},
-		radius:     30,
+		radius:     60,
 		resolution: 64,
 		spread:     2 * math.Pi,
 		angleDec:   200,
@@ -63,14 +63,19 @@ func (f *Firefly) Draw(win *pixelgl.Canvas, mat pixel.Matrix, center pixel.Vec, 
 	// draw the light arc (normally arc is full circle)
 	p := pixel.V(float64(f.position.X()), float64(f.position.Y()))
 	win.SetMatrix(pixel.IM.Scaled(pixel.ZV, f.radius).Moved(mat.Project(p)))
+	win.SetColorMask(pixel.RGB(.1, .1, 0.8).Mul(pixel.Alpha(0.9)))
 	win.SetComposeMethod(pixel.ComposePlus)
 	f.imd.Draw(win)
 
 	// draw the bright world inside the light
-	win.SetMatrix(pixel.IM)
-	win.SetComposeMethod(pixel.ComposeIn)
-	src.Draw(win, pixel.IM.Moved(center))
+	// win.SetMatrix(pixel.IM)
+	// win.SetComposeMethod(pixel.ComposeIn)
+	// src.Draw(win, pixel.IM.Moved(center))
 
+	// win.SetMatrix(pixel.IM.Scaled(pixel.ZV, f.radius).Moved(mat.Project(p)))
+	// win.SetColorMask(pixel.RGB(.1, .1, 0.8).Mul(pixel.Alpha(0.9)))
+	// win.SetComposeMethod(pixel.ComposePlus)
+	// f.imd.Draw(win)
 }
 
 func (f *Firefly) Pos() *mgl32.Vec2 {

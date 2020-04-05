@@ -59,7 +59,7 @@ func NewWorld() *World {
 		shader: shader.New("/assets/shader/nighttime.glsl"),
 	}
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 30; i++ {
 		pos := mgl32.Vec2{rand.Float32() * 500, rand.Float32() * 500}
 		world.fireflies = append(world.fireflies, entity.NewFirefly(pos.X(), pos.Y()))
 	}
