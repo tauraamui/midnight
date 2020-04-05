@@ -126,16 +126,21 @@ func (w *World) Draw(
 		w.movingL, w.movingR, w.movingU, w.movingD,
 	)
 
+	w.worldCopyCanvas.Clear(pixel.RGB(0, 0, 0))
+	w.worldCopyCanvas.SetColorMask(pixel.Alpha(0.15))
+	w.worldCopyCanvas.SetComposeMethod(pixel.ComposePlus)
 	win.Draw(w.worldCopyCanvas, pixel.IM.Moved(w.worldCopyCanvas.Bounds().Center()))
 
-	lights.Clear(pixel.RGB(0, 0, 0).Mul(pixel.Alpha(0.9)))
-	for _, f := range w.fireflies {
-		// lights.SetMatrix(pixel.IM)
-		// lights.SetMatrix(pixel.IM.Moved(w.Camera.Project(pixel.V(float64(f.Pos().X()), float64(f.Pos().Y())))))
-		f.Draw(lights, w.Camera)
-	}
-	lights.Draw(w.worldCopyCanvas, pixel.IM.Moved(w.worldCopyCanvas.Bounds().Center()))
+	lights.Clear(pixel.Alpha(0))
+	lights.SetComposeMethod(pixel.ComposePlus)
+	// for _, f := range w.fireflies {
+	// lights.SetMatrix(pixel.IM)
+	// lights.SetMatrix(pixel.IM.Moved(w.Camera.Project(pixel.V(float64(f.Pos().X()), float64(f.Pos().Y())))))
+	// f.Draw(lights, w.Camera)
+	// }
 
+	w.worldCopyCanvas.SetColorMask(pixel.Alpha(1))
+	lights.Draw(w.worldCopyCanvas, pixel.IM.Moved(w.worldCopyCanvas.Bounds().Center()))
 	w.worldCopyCanvas.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
 	dbg.SetMatrix(w.Camera)
